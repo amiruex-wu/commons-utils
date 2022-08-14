@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn"
+             typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+    <process id="myProcess" name="My process" isExecutable="true">
+        <startEvent id="startevent1" name="Start"></startEvent>
+        <endEvent id="endevent1" name="End"></endEvent>
+        <userTask id="usertask1" name="起草人" activiti:assignee="admin"></userTask>
+        <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+        <sequenceFlow id="flow1" sourceRef="usertask1" targetRef="exclusivegateway1"></sequenceFlow>
+        <userTask id="usertask2" name="审批1" activiti:assignee="admin1"></userTask>
+        <sequenceFlow id="flow2" name="年龄大于30" sourceRef="exclusivegateway1" targetRef="usertask2">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${age>30}]]></conditionExpression>
+        </sequenceFlow>
+        <userTask id="usertask3" name="审批2" activiti:assignee="admin2"></userTask>
+        <sequenceFlow id="flow3" name="年龄小于30" sourceRef="exclusivegateway1" targetRef="usertask3">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${age<30}]]></conditionExpression>
+        </sequenceFlow>
+        <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
+        <sequenceFlow id="flow4" sourceRef="usertask2" targetRef="exclusivegateway2"></sequenceFlow>
+        <sequenceFlow id="flow5" sourceRef="exclusivegateway2" targetRef="endevent1"></sequenceFlow>
+        <sequenceFlow id="flow6" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+        <sequenceFlow id="flow7" sourceRef="usertask3" targetRef="exclusivegateway2"></sequenceFlow>
+    </process>
+
+</definitions>

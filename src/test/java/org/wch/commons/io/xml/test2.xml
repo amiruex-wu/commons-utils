@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<all>
+    <student id="1" name="张三" age="18">
+        <interest>
+            <inte name="唱歌"></inte>
+            <inte name="跳舞"></inte>
+            <inte name="弹琴"></inte>
+        </interest>
+        <studentClass id="1" name="001班" description="高中部"></studentClass>
+    </student>
+    <student id="2" name="李四" age="19">
+        <interest>
+            <inte name="唱歌"></inte>
+            <inte name="敲代码"></inte>
+            <inte name="斗牛"></inte>
+        </interest>
+        <studentClass id="2" name="003班" description="高中部"></studentClass>
+    </student>
+    <student id="3" name="王五" age="18">
+        <interest>
+            <inte name="唱歌"></inte>
+            <inte name="敲代码"></inte>
+            <inte name="斗牛"></inte>
+        </interest>
+        <studentClass id="8" name="008班" description="初中部"></studentClass>
+    </student>
+</all>

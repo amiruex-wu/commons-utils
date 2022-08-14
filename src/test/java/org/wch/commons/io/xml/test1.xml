@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<all>
+    <student>
+        <name id="zs">张三</name>
+        <age>18</age>
+        <interest>
+            <inte>唱歌</inte>
+            <inte>跳舞</inte>
+            <inte>弹琴</inte>
+        </interest>
+        <studentClass>
+            <id>1</id>
+            <name>001班</name>
+            <description>高中部</description>
+        </studentClass>
+    </student>
+    <student>
+        <name id="ls">李四</name>
+        <age>19</age>
+        <interest>
+            <inte>唱歌</inte>
+            <inte>敲代码</inte>
+            <inte>斗牛</inte>
+        </interest>
+        <studentClass>
+            <id>2</id>
+            <name>003班</name>
+            <description>高中部</description>
+        </studentClass>
+    </student>
+    <student>
+        <name id="ww">王五</name>
+        <age>18</age>
+        <interest>
+            <inte>唱歌</inte>
+            <inte>敲代码</inte>
+            <inte>斗牛</inte>
+        </interest>
+        <studentClass>
+            <id>8</id>
+            <name>008班</name>
+            <description>初中部</description>
+        </studentClass>
+    </student>
+
+</all>
