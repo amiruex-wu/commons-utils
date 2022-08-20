@@ -16,6 +16,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.*;
@@ -30,7 +31,7 @@ import java.util.stream.Stream;
 public class XMLUtils {
 
     private final static Class<?>[] BASIC_CLAZZ = {Byte.class, Short.class, Integer.class, Float.class, Double.class,
-            Long.class, BigDecimal.class, String.class, Boolean.class, Character.class,
+            Long.class, BigDecimal.class, BigInteger.class, String.class, Boolean.class, Character.class,
             byte.class, short.class, int.class, float.class, double.class,
             long.class, boolean.class, char.class,};
 

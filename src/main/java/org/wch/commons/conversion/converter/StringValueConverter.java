@@ -1,6 +1,5 @@
 package org.wch.commons.conversion.converter;
 
-import com.google.gson.Gson;
 import lombok.NoArgsConstructor;
 import org.wch.commons.lang.BooleanUtils;
 import org.wch.commons.lang.DateUtils;

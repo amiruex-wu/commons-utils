@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: TODO
@@ -30,6 +32,9 @@ public class Person implements Serializable {
     private String idCardNo1;
     private AddressVO address;
     private String emergencyLinkMan;
+    private Map<String, Object> target;
+    private List<String> roles1;
+    private List<AddressVO> addresses;
 
     public Person(String userName, String password, int age) {
         this.userName = userName;

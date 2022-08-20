@@ -35,10 +35,10 @@ public class DateValueConverter<T> extends AbstractConverter<T> {
                 result = Optional.of(requiredType.cast(DateUtils.format((Date) obj, FormatPattern.FULL_DATE_FORMAT_1)));
                 break;
             case "LocalDateTime":
-                result = Optional.of(requiredType.cast(DateUtils.toLocalDateTime((Date) obj)));
+                result = DateUtils.toLocalDateTime((Date) obj).map(requiredType::cast);
                 break;
             case "LocalDate":
-                result = Optional.of(requiredType.cast(DateUtils.toLocalDate((Date) obj)));
+                result = DateUtils.toLocalDate((Date) obj).map(requiredType::cast);
                 break;
             case "LocalTime":
                 result = DateUtils.toLocalDateTime((Date) obj).map(dateTime -> requiredType.cast(dateTime.toLocalTime()));

@@ -26,7 +26,7 @@ public class StopWatch {
     private long totalTimeNanos;
 
     public StopWatch() {
-        this("");
+        this(RandomUtils.uuid());
     }
 
     public StopWatch(String id) {

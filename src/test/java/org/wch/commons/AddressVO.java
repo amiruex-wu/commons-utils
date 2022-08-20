@@ -2,6 +2,8 @@ package org.wch.commons;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @Description: TODO
  * @Author: wuchu
@@ -9,7 +11,7 @@ import lombok.Data;
  * @CreateTime: 2022/8/20 16:37
  */
 @Data
-public class AddressVO {
+public class AddressVO implements Serializable {
     private String province;
     private String city;
     private String district;
