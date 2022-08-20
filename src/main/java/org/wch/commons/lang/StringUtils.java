@@ -3,6 +3,8 @@ package org.wch.commons.lang;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @Description: TODO
@@ -13,7 +15,6 @@ public class StringUtils {
 
     /**
      * A String for a space character.
-     *
      */
     public static final String SPACE = " ";
 
@@ -40,7 +41,6 @@ public class StringUtils {
 
     /**
      * Represents a failed index search.
-     *
      */
     public static final int INDEX_NOT_FOUND = -1;
 
@@ -62,7 +62,6 @@ public class StringUtils {
 
     /**
      * {@code \u0000} null control character ('\0'), abbreviated NUL.
-     *
      */
     public static final char C_NUL = '\0';
 
@@ -791,8 +790,8 @@ public class StringUtils {
      * StringUtils.equals("abc", "ABC") = false
      * </pre>
      *
-     * @param cs1  the first CharSequence, may be {@code null}
-     * @param cs2  the second CharSequence, may be {@code null}
+     * @param cs1 the first CharSequence, may be {@code null}
+     * @param cs2 the second CharSequence, may be {@code null}
      * @return {@code true} if the CharSequences are equal (case-sensitive), or both {@code null}
      * @see Object#equals(Object)
      * @see #equalsIgnoreCase(CharSequence, CharSequence)
@@ -833,7 +832,7 @@ public class StringUtils {
      * StringUtils.equalsAny("abc", "ABC", "DEF") = false
      * </pre>
      *
-     * @param string to compare, may be {@code null}.
+     * @param string        to compare, may be {@code null}.
      * @param searchStrings a vararg of strings, may be {@code null}.
      * @return {@code true} if the string is equal (case-sensitive) to any other element of {@code searchStrings};
      * {@code false} if {@code searchStrings} is null or contains no matches.
@@ -862,12 +861,12 @@ public class StringUtils {
      * StringUtils.equalsAnyIgnoreCase("abc", "ABC", "DEF") = true
      * </pre>
      *
-     * @param string to compare, may be {@code null}.
+     * @param string        to compare, may be {@code null}.
      * @param searchStrings a vararg of strings, may be {@code null}.
      * @return {@code true} if the string is equal (case-insensitive) to any other element of {@code searchStrings};
      * {@code false} if {@code searchStrings} is null or contains no matches.
      */
-    public static boolean equalsAnyIgnoreCase(final CharSequence string, final CharSequence...searchStrings) {
+    public static boolean equalsAnyIgnoreCase(final CharSequence string, final CharSequence... searchStrings) {
         if (ArrayUtils.isNotEmpty(searchStrings)) {
             for (final CharSequence next : searchStrings) {
                 if (equalsIgnoreCase(string, next)) {
@@ -893,8 +892,8 @@ public class StringUtils {
      * StringUtils.equalsIgnoreCase("abc", "ABC") = true
      * </pre>
      *
-     * @param cs1  the first CharSequence, may be {@code null}
-     * @param cs2  the second CharSequence, may be {@code null}
+     * @param cs1 the first CharSequence, may be {@code null}
+     * @param cs2 the second CharSequence, may be {@code null}
      * @return {@code true} if the CharSequences are equal (case-insensitive), or both {@code null}
      * @see #equals(CharSequence, CharSequence)
      */
@@ -914,16 +913,16 @@ public class StringUtils {
     /**
      * Green implementation of regionMatches.
      *
-     * @param cs the {@code CharSequence} to be processed
+     * @param cs         the {@code CharSequence} to be processed
      * @param ignoreCase whether or not to be case insensitive
-     * @param thisStart the index to start on the {@code cs} CharSequence
-     * @param substring the {@code CharSequence} to be looked for
-     * @param start the index to start on the {@code substring} CharSequence
-     * @param length character length of the region
+     * @param thisStart  the index to start on the {@code cs} CharSequence
+     * @param substring  the {@code CharSequence} to be looked for
+     * @param start      the index to start on the {@code substring} CharSequence
+     * @param length     character length of the region
      * @return whether the region matched
      */
     static boolean regionMatches(final CharSequence cs, final boolean ignoreCase, final int thisStart,
-                                 final CharSequence substring, final int start, final int length)    {
+                                 final CharSequence substring, final int start, final int length) {
         if (cs instanceof String && substring instanceof String) {
             return ((String) cs).regionMatches(ignoreCase, thisStart, (String) substring, start, length);
         }
@@ -966,5 +965,29 @@ public class StringUtils {
         }
 
         return true;
+    }
+
+    /**
+     * <p>判断字符是否匹配正则表达式</p>
+     *
+     * The following types are supported:
+     * <ul>
+     *  <li>String (@String)</li>
+     * </ul>
+     * <pre>
+     *
+     * </pre>
+     *
+     * @param source
+     * @param regex
+     * @return: boolean
+     */
+    public static boolean matches(String source, String regex) {
+        if (anyBlank(source, regex)) {
+            return false;
+        }
+        Pattern pat = Pattern.compile(regex);
+        Matcher mat = pat.matcher(source);
+        return mat.find();
     }
 }

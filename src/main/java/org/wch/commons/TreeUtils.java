@@ -3,8 +3,8 @@ package org.wch.commons;
 import org.wch.commons.lang.NumberUtils1;
 import org.wch.commons.lang.ObjectUtils;
 import org.wch.commons.lang.StringUtils;
-import org.wch.commons.text.TreeNode;
-import org.wch.commons.text.TreesData;
+import org.wch.commons.beans.TreeNode;
+import org.wch.commons.beans.TreesData;
 
 import java.util.*;
 import java.util.function.Consumer;
