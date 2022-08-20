@@ -63,7 +63,7 @@ import java.util.UUID;
  * </p>
  *
  */
-
+@Deprecated
 public class ConvertUtils2 {
 
     private static final boolean[] TTTT = {true, true, true, true};

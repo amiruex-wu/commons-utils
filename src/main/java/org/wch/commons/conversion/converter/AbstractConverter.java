@@ -21,8 +21,6 @@ public abstract class AbstractConverter<T> {
 
     abstract public Optional<T> convert();
 
-//    abstract public Optional<T> convert(Object obj, Class<T> requiredType);
-
     protected static <T> Optional<T> castToRequiredType(Class<?> sourceClazz, Class<T> requiredType, String parseFunction, Object value) {
         try {
             if (value instanceof String || value instanceof Character) {

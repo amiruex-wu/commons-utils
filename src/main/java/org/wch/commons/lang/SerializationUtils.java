@@ -5,7 +5,7 @@ import com.sun.xml.internal.ws.encoding.soap.SerializationException;
 import java.io.*;
 
 /**
- * @Description: TODO
+ * @Description: 对象序列化工具类
  * @Author: wuchu
  * @CreateTime: 2022-07-13 16:53
  */

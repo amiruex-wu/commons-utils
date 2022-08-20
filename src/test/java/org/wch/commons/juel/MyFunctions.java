@@ -1,4 +1,4 @@
-package org.wch.commons.io.juel;
+package org.wch.commons.juel;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -6,7 +6,7 @@ import com.google.gson.GsonBuilder;
 import java.lang.reflect.Type;
 
 /**
- * @Description: TODO
+ * @Description: GSON工具类
  * @Author: wuchu
  * @CreateTime: 2022-07-12 17:45
  */

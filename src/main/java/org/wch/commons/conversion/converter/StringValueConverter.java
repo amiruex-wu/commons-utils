@@ -9,6 +9,11 @@ import org.wch.commons.lang.ObjectUtils;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+/**
+ * @Description: 字符类型转换器
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
+ */
 @NoArgsConstructor
 public class StringValueConverter<T> extends AbstractConverter<T> {
 

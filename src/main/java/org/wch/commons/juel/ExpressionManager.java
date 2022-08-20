@@ -1,4 +1,4 @@
-package org.wch.commons.io.juel;
+package org.wch.commons.juel;
 
 import de.odysseus.el.ExpressionFactoryImpl;
 import lombok.AllArgsConstructor;
@@ -13,6 +13,11 @@ import javax.el.ValueExpression;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @Description: 表达式管理类
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
+ */
 @Data
 @AllArgsConstructor
 public class ExpressionManager {

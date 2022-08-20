@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * @Description: todo 新增
+ * @Description: xml文件节点属性
  * @Author: wuchu
  * @CreateTime: 2022-07-29 10:32
  */

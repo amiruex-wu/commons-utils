@@ -25,7 +25,7 @@ public class ZipUtils1 {
      * @return
      * @throws RuntimeException
      */
-    public static List<String> unZipGetFileType(File srcFile) {
+  /*  public static List<String> unZipGetFileType(File srcFile) {
         // 判断源文件是否存在
         if (!srcFile.exists()) {
             throw new RuntimeException("9999"+ srcFile.getPath() + "所指文件不存在");
@@ -46,13 +46,13 @@ public class ZipUtils1 {
         return fileSuffix;
     }
 
-    /**
+    *//**
      * 解压zip包至指定的文件夹下
      *
      * @param srcFile
      * @param destDirPath
      * @throws RuntimeException
-     */
+     *//*
     public static void unZip(File srcFile, String destDirPath) {
         // 判断源文件是否存在
         if (!srcFile.exists()) {
@@ -95,13 +95,13 @@ public class ZipUtils1 {
         }
     }
 
-    /**
+    *//**
      * 解压文件获取实体
      *
      * @param srcFile
      * @return
      * @throws RuntimeException
-     */
+     *//*
     public static List<ZipArchiveEntry> unZip(File srcFile) {
         List<ZipArchiveEntry> zipEntries = new ArrayList<>();
         // 判断源文件是否存在
@@ -119,5 +119,5 @@ public class ZipUtils1 {
             throw new RuntimeException("9999"+"unzip error from ZipUtils," + e.getMessage());
         }
         return zipEntries;
-    }
+    }*/
 }

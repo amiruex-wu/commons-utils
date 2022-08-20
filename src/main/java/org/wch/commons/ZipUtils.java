@@ -20,6 +20,11 @@ import java.util.zip.ZipOutputStream;
  * （4）可以选择是否保留原来的目录结构，如果不保留，所有文件跑压缩包根目录去了，且空文件夹直接舍弃。注意：如果不保留文件原来目录结构，在碰到文件名相同的文件时，会压缩失败。
  * （5）代码中提供了2个压缩文件的方法，一个的输入参数为文件夹路径，一个为文件列表，可根据实际需求选择方法。
  */
+/**
+ * @Description: 文件压缩工具类
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
+ */
 public class ZipUtils {
 
     private static final int BUFFER_SIZE = 2 * 1024;
@@ -36,12 +41,12 @@ public class ZipUtils {
      * @throws RuntimeException 压缩失败会抛出运行时异常
      */
     public static void toZip(String srcDir, OutputStream out, boolean KeepDirStructure) {
-        long start = System.currentTimeMillis();
+//        long start = System.currentTimeMillis();
         try (ZipOutputStream zos = new ZipOutputStream(out);) {
             File sourceFile = new File(srcDir);
             compress(sourceFile, zos, sourceFile.getName(), KeepDirStructure);
             long end = System.currentTimeMillis();
-            System.out.println("压缩完成，耗时：" + (end - start) + " ms");
+//            System.out.println("压缩完成，耗时：" + (end - start) + " ms");
         } catch (Exception e) {
             throw new RuntimeException("zip error from ZipUtils", e);
         }
@@ -61,15 +66,15 @@ public class ZipUtils {
             return;
         }
 
-        long start = System.currentTimeMillis();
+//        long start = System.currentTimeMillis();
 
         String filePath = targetDir + File.separator + fileName + SUFFIX;
         try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(filePath));) {
 
             File sourceFile = new File(srcDir);
             compress(sourceFile, zos, sourceFile.getName(), KeepDirStructure);
-            long end = System.currentTimeMillis();
-            System.out.println("压缩完成，耗时：" + (end - start) + " ms");
+//            long end = System.currentTimeMillis();
+//            System.out.println("压缩完成，耗时：" + (end - start) + " ms");
         } catch (Exception e) {
             throw new RuntimeException("zip error from ZipUtils", e);
         }

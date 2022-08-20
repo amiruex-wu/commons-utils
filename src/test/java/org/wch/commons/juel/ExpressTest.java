@@ -1,4 +1,4 @@
-//package org.wch.commons.io.juel;
+//package org.wch.commons.juel;
 //
 //import de.odysseus.el.ExpressionFactoryImpl;
 //import de.odysseus.el.TreeMethodExpression;

@@ -1,9 +1,5 @@
 package org.wch.commons.conversion;
 
-import com.google.gson.Gson;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.wch.commons.conversion.converter.*;
 import org.wch.commons.lang.ObjectUtils;
 
@@ -15,6 +11,11 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * @Description: 类型转换器工厂
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
+ */
 public class ConvertFactory {
 
     public static <T> Optional<AbstractConverter<T>> getConverter(Object source, Class<T> requiredType) {

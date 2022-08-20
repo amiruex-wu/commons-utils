@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Description: TODO
+ * @Description: 线程池工具类
  * @Author: wuchu
  * @CreateTime: 2022-07-20 18:13
  */

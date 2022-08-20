@@ -5,6 +5,11 @@ import org.wch.commons.lang.ObjectUtils;
 
 import java.util.Optional;
 
+/**
+ * @Description: 普通对象类型转换器
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
+ */
 @NoArgsConstructor
 public class ObjectValueConverter<T> extends AbstractConverter<T> {
 

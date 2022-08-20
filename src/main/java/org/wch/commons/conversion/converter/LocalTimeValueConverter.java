@@ -11,7 +11,9 @@ import java.time.LocalTime;
 import java.util.Optional;
 
 /**
- *
+ * @Description: 时间类型转换器
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
  */
 @NoArgsConstructor
 public class LocalTimeValueConverter<T> extends AbstractConverter<T> {

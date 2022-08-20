@@ -10,7 +10,11 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-
+/**
+ * @Description: 树形构建工具类
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
+ */
 public class TreeUtils {
 
     /**

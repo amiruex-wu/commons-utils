@@ -6,11 +6,13 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.NoArgsConstructor;
 import org.wch.commons.lang.ObjectUtils;
 
-import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+/**
+ * @Description: 键值对类型转换器
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
+ */
 @NoArgsConstructor
 public class MapValueConverter<T> extends AbstractConverter<T> {
 

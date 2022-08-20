@@ -27,6 +27,11 @@ import java.util.Optional;
  * <p>Provides extra functionality for Java Number classes.</p>
  *
  */
+/**
+ * @Description: 数字类型工具
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
+ */
 public class NumberUtils {
 
     /**

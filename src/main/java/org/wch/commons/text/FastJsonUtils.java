@@ -8,7 +8,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * todo
+ * @Description: Fastjson数据工具类
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
  */
 public class FastJsonUtils {
 

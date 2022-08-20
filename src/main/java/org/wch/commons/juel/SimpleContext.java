@@ -1,4 +1,4 @@
-package org.wch.commons.io.juel;
+package org.wch.commons.juel;
 
 import de.odysseus.el.util.SimpleResolver;
 
@@ -77,7 +77,7 @@ public class SimpleContext extends ELContext implements Serializable {
 
     // todo 待继续优化改进
     public Object deepClone() {
-        //深度克隆
+        // 深度克隆
         ByteArrayInputStream bis = null;
         ObjectInputStream ois = null;
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream(512);
