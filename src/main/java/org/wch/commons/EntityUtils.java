@@ -2,60 +2,49 @@ package org.wch.commons;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.wch.commons.lang.ConvertUtils;
 import org.wch.commons.lang.ObjectUtils;
 import org.wch.commons.lang.StringUtils;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @Description: TODO 新增的
+ * @Description: TODO 这里应该是重复功能没有多大的用处
  * @Author: wuchu
  * @CreateTime: 2022-07-20 16:44
  */
+@Deprecated
 public class EntityUtils {
 
+    private final static Class<?>[] BASIC_CLAZZ = {Byte.class, Short.class, Integer.class, Float.class, Double.class,
+            Long.class, BigDecimal.class, BigInteger.class, String.class, Boolean.class, Character.class,
+            byte.class, short.class, int.class, float.class, double.class,
+            long.class, boolean.class, char.class, Map.class};
+
     public static <T> void setFieldValue(T t, Map<String, Object> fieldValues) {
-        setFieldValue(t, fieldValues, false);
+        setFieldValue(t, fieldValues, true);
     }
 
     public static <T> void setFieldValue(T t, Map<String, Object> fieldValues, boolean ignoreException) {
         if (ObjectUtils.anyNull(t, fieldValues) || ObjectUtils.isEmpty(fieldValues)) {
             return;
         }
-        Field[] fields = t.getClass().getDeclaredFields();
+        final Class<?> clazz = t.getClass();
+        Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
-            Object value = fieldValues.get(field.getName());
-            if (ObjectUtils.nonNull(value)) {
-                field.setAccessible(true);
-                try {
-                    field.set(t, value);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                    if (!ignoreException) {
-                        throw new RuntimeException(e);
-                    }
-                }
+            if (fieldValues.containsKey(field.getName())) {
+                Object fieldValue = fieldValues.get(field.getName());
+                resetPropertyValue(t, ignoreException, clazz, field, fieldValue);
             }
-        }
-    }
-
-    @Deprecated
-    public static <T> Optional<T> resetFieldValue(T t, Map<String, Object> fieldValues, boolean ignoreException) {
-        if (ObjectUtils.anyNull(t, fieldValues) || ObjectUtils.isEmpty(fieldValues)) {
-            return Optional.empty();
-        }
-        try {
-            JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(t));
-            fieldValues.forEach(jsonObject::put);
-            return Optional.of(jsonObject.toJavaObject((Type) t.getClass()));
-        } catch (Exception e) {
-            if (!ignoreException) {
-                throw new RuntimeException(e);
-            }
-            return Optional.empty();
         }
     }
 
@@ -67,18 +56,11 @@ public class EntityUtils {
         if (ObjectUtils.anyNull(t, fieldValue)) {
             return;
         }
-        Field[] fields = t.getClass().getDeclaredFields();
+        final Class<?> clazz = t.getClass();
+        Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             if (Objects.equals(field.getName(), fieldName)) {
-                field.setAccessible(true);
-                try {
-                    field.set(t, fieldValue);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                    if (!ignoreException) {
-                        throw new RuntimeException(e);
-                    }
-                }
+                resetPropertyValue(t, ignoreException, clazz, field, fieldValue);
                 break;
             }
         }
@@ -137,6 +119,25 @@ public class EntityUtils {
         }
 
         return Optional.of(result);
+    }
+
+    //region 私有方法
+
+    private static <T> void resetPropertyValue(T t, boolean ignoreException, Class<?> clazz, Field field, Object fieldValue) {
+        try {
+            PropertyDescriptor pd = new PropertyDescriptor(field.getName(), clazz);
+            // 获得set方法
+            final Method writeMethod = pd.getWriteMethod();
+            final Optional<?> optional = ConvertUtils.convertIfNecessary(fieldValue, field.getType());
+            if (optional.isPresent()) {
+                writeMethod.invoke(t, optional.get());
+            }
+        } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
+            e.printStackTrace();
+            if (!ignoreException) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 }

@@ -56,14 +56,14 @@ public class BeanUtilsTest {
         addressVO.setDistrict("望城区");
         person.setAddress(addressVO);
         person.setEmergencyLinkMan("赵市明");
-        final StopWatch stopWatch = StopWatch.create();
+        final StopWatch stopWatch1 = StopWatch.create();
 //        try {
 //            BeanUtils.getMethod(person);
 //        } catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
 //            e.printStackTrace();
 //        }
         BeanUtils.copyProperties(person, person1, false);
-        System.out.println("person1 read cost time is " + stopWatch.getTotalTimeMillis() + "ms");
+        System.out.println("person1 read cost time is " + stopWatch1.getTotalTimeMillis() + "ms");
         System.out.println("person1 is " + person1);
 
     }
@@ -112,7 +112,7 @@ public class BeanUtilsTest {
             person.setTarget(map);
             temp.add(person);
         }
-        final StopWatch stopWatch = StopWatch.createStarted();
+        final StopWatch stopWatch1 = StopWatch.create();
         final List<Person1> collect = temp.stream().map(person -> {
 //            final long curent = System.currentTimeMillis();
             Person1 person1 = new Person1();
@@ -126,8 +126,8 @@ public class BeanUtilsTest {
 //        } catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
 //            e.printStackTrace();
 //        }
-        stopWatch.stop();
-        System.out.println("total cost time is " + stopWatch.getTotalTimeMillis() + "ms");
+        stopWatch1.stop();
+        System.out.println("total cost time is " + stopWatch1.getTotalTimeMillis() + "ms");
 
         System.out.println("person1 is " + collect.size());
         for (int i = 0; i < 1; i++) {

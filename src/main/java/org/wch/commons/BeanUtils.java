@@ -44,24 +44,8 @@ public class BeanUtils {
         copyProperties(source, target, isExactMatchType, basicClass);
     }
 
-    /*@Deprecated
-    public static void getMethod(Object obj) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
-        Class clazz = obj.getClass();//获得实体类名
-        Field[] fields = obj.getClass().getDeclaredFields();//获得属性
-        //获得Object对象中的所有方法
-        for (Field field : fields) {
-            PropertyDescriptor pd = new PropertyDescriptor(field.getName(), clazz);
-            Method getMethod = pd.getReadMethod();//获得get方法
-            final Object invoke = getMethod.invoke(obj);//此处为执行该Object对象的get方法
-            Method setMethod = pd.getWriteMethod();//获得set方法
-            //setMethod.invoke(obj,"参数");//此处为执行该Object对象的set方法
-            System.out.println(pd.getName() + ",a:" + pd.getDisplayName() + "read result is " + invoke);
-        }
-    }
-*/
-
     /**
-     * 克隆对象
+     * 深度克隆对象
      *
      * @param source 源数据（需要实现序列化接口）
      * @param <T>
@@ -183,4 +167,6 @@ public class BeanUtils {
             writeMethod.invoke(target, optional.orElse(null));
         }
     }
+
+    //endregion
 }

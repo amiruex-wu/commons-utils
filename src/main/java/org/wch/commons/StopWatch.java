@@ -1,12 +1,15 @@
 package org.wch.commons;
 
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import org.wch.commons.enums.StatusType;
 import org.wch.commons.lang.ObjectUtils;
+import org.wch.commons.lang.StringUtils;
 
 import java.text.NumberFormat;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -14,15 +17,32 @@ import java.util.concurrent.TimeUnit;
  * @Author: wuchu
  * @CreateTime: 2022-07-13 17:22
  */
+@Data
 public class StopWatch {
 
+    /**
+     * 当前最后一个任务的主键ID
+     */
     private final String id;
-    private boolean keepTaskList;
+
+    /**
+     * 任务集合
+     */
     private final List<StopWatch.TaskInfo> taskList;
-    private long startTimeNanos;
-    private String currentTaskName;
+
+    /**
+     * 最后一个任务
+     */
     private StopWatch.TaskInfo lastTaskInfo;
+
+    /**
+     * 任务总数
+     */
     private int taskCount;
+
+    /**
+     * 任务总耗时
+     */
     private long totalTimeNanos;
 
     public StopWatch() {
@@ -30,56 +50,31 @@ public class StopWatch {
     }
 
     public StopWatch(String id) {
-        this.keepTaskList = true;
-        this.taskList = new LinkedList<>();
         this.id = id;
-    }
-
-    public String getId() {
-        return this.id;
-    }
-
-    public void setKeepTaskList(boolean keepTaskList) {
-        this.keepTaskList = keepTaskList;
+        this.taskList = new LinkedList<>();
+        TaskInfo taskInfo = new TaskInfo(id, 0L, StatusType.NOT_STARTED);
+        this.taskList.add(taskInfo);
+        this.lastTaskInfo = taskInfo;
     }
 
     /**
-     * Creates a stopwatch for convenience.
+     * 创建并启动一个stopwatch.
      *
-     * @return StopWatch a stopwatch.
+     * @return 返回一个已经启动的stopwatch.
      */
     public static StopWatch create() {
-        return new StopWatch();
-    }
-
-    /**
-     * Creates a stopwatch for convenience.
-     *
-     * @param id id
-     * @return StopWatch a stopwatch.
-     */
-    public static StopWatch create(String id) {
-        return new StopWatch(id);
-    }
-
-    /**
-     * Creates a started stopwatch for convenience.
-     *
-     * @return StopWatch a stopwatch that's already been started.
-     */
-    public static StopWatch createStarted() {
         final StopWatch sw = new StopWatch();
-        sw.start();
+        sw.start(sw.getId());
         return sw;
     }
 
     /**
-     * Creates a started stopwatch for convenience.
+     * 创建一个stopwatch并且启动
      *
      * @param taskName the task name
      * @return StopWatch a stopwatch that's already been started.
      */
-    public static StopWatch createStarted(String taskName) {
+    public static StopWatch create(String taskName) {
         final StopWatch sw = new StopWatch();
         sw.start(taskName);
         return sw;
@@ -87,162 +82,189 @@ public class StopWatch {
 
     /**
      * <p>
-     * Starts the stopwatch.
+     * 开启stopwatch.
      * </p>
      *
      * <p>
-     * This method starts a new timing session, clearing any previous values.
+     * 如果方法当前任务列表中包含相同名称的任务且未开始则启动该stopwatch,否则创建一个新的任务并加入到列表中.
      * </p>
      *
-     * @throws IllegalStateException if the StopWatch is already running.
+     * @param taskName 任务名称
      */
-    public void start() throws IllegalStateException {
-        this.start("");
-    }
-
-    /**
-     * <p>
-     * Starts the stopwatch.
-     * </p>
-     *
-     * <p>
-     * This method starts a new timing session, clearing any previous values.
-     * </p>
-     *
-     * @param taskName th task name
-     * @throws IllegalStateException if the StopWatch is already running.
-     */
-    public void start(String taskName) throws IllegalStateException {
-        if (ObjectUtils.nonNull(this.currentTaskName)) {
-            throw new IllegalStateException("Can't start StopWatchSpring: it's already running");
+    public void start(String taskName) {
+        if (ObjectUtils.isNull(this.taskList)) {
+            throw new IllegalStateException("Can't start StopWatchSpring: task list is empty");
+        }
+        if (StringUtils.isBlank(taskName)) {
+            throw new IllegalStateException("Can't start StopWatchSpring: task name is empty");
+        }
+        final Optional<TaskInfo> optional = taskList.stream()
+                .filter(taskInfo -> ObjectUtils.equals(taskInfo.getName(), taskName)
+                        && !StatusType.UNDER_WAY.equals(taskInfo.getStatus()))
+                .findFirst();
+        if (optional.isPresent()) {
+            optional.get().setStatus(StatusType.UNDER_WAY);
+            optional.get().setNanos(System.nanoTime());
         } else {
-            this.currentTaskName = taskName;
-            this.startTimeNanos = System.nanoTime();
+            TaskInfo taskInfo = new TaskInfo(id, System.nanoTime(), StatusType.UNDER_WAY);
+            this.taskList.add(taskInfo);
+            this.lastTaskInfo = taskInfo;
         }
     }
 
-
     /**
-     * <p>
-     * Stops the stopwatch.
-     * </p>
-     *
-     * <p>
-     * This method ends a new timing session, allowing the time to be retrieved.
-     * </p>
-     *
-     * @throws IllegalStateException if the StopWatch is not running.
+     * 停止所有任务
      */
-    public void stop() throws IllegalStateException {
-        if (ObjectUtils.isNull(this.currentTaskName)) {
+    public void stop() {
+        if (ObjectUtils.isEmpty(taskList)) {
+            throw new IllegalStateException("Can't stop StopWatchSpring: task list is empty");
+        }
+        final long count = taskList.stream().filter(taskInfo -> !StatusType.FINISHED.equals(taskInfo.getStatus())).count();
+        if (count <= 0) {
             throw new IllegalStateException("Can't stop StopWatchSpring: it's not running");
-        } else {
-            long lastTime = System.nanoTime() - this.startTimeNanos;
-            this.totalTimeNanos += lastTime;
-            this.lastTaskInfo = new StopWatch.TaskInfo(this.currentTaskName, lastTime);
-            if (this.keepTaskList) {
-                this.taskList.add(this.lastTaskInfo);
-            }
-
-            ++this.taskCount;
-            this.currentTaskName = null;
         }
+
+        for (TaskInfo taskInfo : taskList) {
+            if (!StatusType.FINISHED.equals(taskInfo.getStatus())) {
+                taskInfo.setStatus(StatusType.FINISHED);
+                final long nanos = System.nanoTime() - taskInfo.getNanos();
+                taskInfo.setNanos(nanos);
+                this.totalTimeNanos += nanos;
+            } else {
+                this.totalTimeNanos += taskInfo.getNanos();
+            }
+        }
+        this.taskCount = taskList.size();
     }
 
-    public boolean isRunning() {
-        return this.currentTaskName != null;
-    }
-
-    public Optional<String> currentTaskName() {
-        return Optional.ofNullable(this.currentTaskName);
-    }
-
+    /**
+     * 获取最后一个任务耗时
+     *
+     * @return 返回耗时纳秒数
+     * @throws IllegalStateException
+     */
     public Optional<Long> getLastTaskTimeNanos() throws IllegalStateException {
         if (ObjectUtils.isNull(this.lastTaskInfo)) {
-//            throw new IllegalStateException("No tasks run: can't get last task interval");
             return Optional.empty();
         } else {
-            return Optional.of(this.lastTaskInfo.getTimeNanos());
+            return Optional.of(this.lastTaskInfo.getNanos());
         }
     }
 
+    /**
+     * 获取最后一个任务耗时
+     *
+     * @return 返回耗时毫秒数
+     * @throws IllegalStateException
+     */
     public Optional<Long> getLastTaskTimeMillis() throws IllegalStateException {
         if (ObjectUtils.isNull(this.lastTaskInfo)) {
-//            throw new IllegalStateException("No tasks run: can't get last task interval");
             return Optional.empty();
         } else {
             return Optional.of(this.lastTaskInfo.getTimeMillis());
         }
     }
 
-    public Optional<String> getLastTaskName() throws IllegalStateException {
+    /**
+     * 获取最后一个任务名称
+     *
+     * @return 返回字符串或空值
+     */
+    public Optional<String> getLastTaskName() {
         if (ObjectUtils.isNull(this.lastTaskInfo)) {
-//            throw new IllegalStateException("No tasks run: can't get last task name");
             return Optional.empty();
         } else {
-            return Optional.of(this.lastTaskInfo.getTaskName());
+            return Optional.of(this.lastTaskInfo.getName());
         }
     }
 
-    public Optional<StopWatch.TaskInfo> getLastTaskInfo() throws IllegalStateException {
+    /**
+     * 获取最后一个任务信息
+     *
+     * @return 任务对象
+     */
+    public Optional<StopWatch.TaskInfo> getLastTaskInfo() {
         if (ObjectUtils.isNull(this.lastTaskInfo)) {
-//            throw new IllegalStateException("No tasks run: can't get last task info");
             return Optional.empty();
         } else {
             return Optional.of(this.lastTaskInfo);
         }
     }
 
-    public long getTotalTimeNanos() {
-        return this.totalTimeNanos;
-    }
-
+    /**
+     * 获取任务总耗时
+     *
+     * @return 毫秒数
+     */
     public long getTotalTimeMillis() {
+        if (totalTimeNanos <= 0 && ObjectUtils.isNotEmpty(taskList)) {
+            final long currentNanos = System.nanoTime();
+            final long total = taskList.stream()
+                    .mapToLong(taskInfo -> {
+                        if (StatusType.FINISHED.equals(taskInfo.getStatus())) {
+                            return taskInfo.getNanos();
+                        }
+                        return currentNanos - taskInfo.getNanos();
+                    })
+                    .sum();
+            return nanosToMillis(total);
+        }
         return nanosToMillis(this.totalTimeNanos);
     }
 
+    /**
+     * 获取所有任务总耗时
+     *
+     * @return 总耗时秒数
+     */
     public double getTotalTimeSeconds() {
+        if (totalTimeNanos <= 0 && ObjectUtils.isNotEmpty(taskList)) {
+            final long currentNanos = System.nanoTime();
+            final long total = taskList.stream()
+                    .mapToLong(taskInfo -> {
+                        if (StatusType.FINISHED.equals(taskInfo.getStatus())) {
+                            return taskInfo.getNanos();
+                        }
+                        return currentNanos - taskInfo.getNanos();
+                    })
+                    .sum();
+            return nanosToSeconds(total);
+        }
         return nanosToSeconds(this.totalTimeNanos);
     }
 
-    public int getTaskCount() {
-        return this.taskCount;
-    }
-
-    public StopWatch.TaskInfo[] getTaskInfo() {
-        if (!this.keepTaskList) {
-            throw new UnsupportedOperationException("Task info is not being kept!");
-        } else {
-            return this.taskList.toArray(new TaskInfo[0]);
-        }
-    }
-
+    /**
+     * 简短信息
+     *
+     * @return
+     */
     public String shortSummary() {
         return "StopWatchSpring '" + this.getId() + "': running time = " + this.getTotalTimeNanos() + " ns";
     }
 
+    /**
+     * 信息打印字符
+     *
+     * @return
+     */
     public String prettyPrint() {
         StringBuilder sb = new StringBuilder(this.shortSummary());
         sb.append('\n');
-        if (!this.keepTaskList) {
-            sb.append("No task info kept");
-        } else {
-            sb.append("---------------------------------------------\n");
-            sb.append("ns         %     Task name\n");
-            sb.append("---------------------------------------------\n");
-            NumberFormat nf = NumberFormat.getNumberInstance();
-            nf.setMinimumIntegerDigits(9);
-            nf.setGroupingUsed(false);
-            NumberFormat pf = NumberFormat.getPercentInstance();
-            pf.setMinimumIntegerDigits(3);
-            pf.setGroupingUsed(false);
-            StopWatch.TaskInfo[] taskInfos = this.getTaskInfo();
+        sb.append("---------------------------------------------\n");
+        sb.append("ns         %     Task name\n");
+        sb.append("---------------------------------------------\n");
+        NumberFormat nf = NumberFormat.getNumberInstance();
+        nf.setMinimumIntegerDigits(9);
+        nf.setGroupingUsed(false);
+        NumberFormat pf = NumberFormat.getPercentInstance();
+        pf.setMinimumIntegerDigits(3);
+        pf.setGroupingUsed(false);
+        StopWatch.TaskInfo[] taskInfos = this.getTaskInfo();
 
-            for (TaskInfo task : taskInfos) {
-                sb.append(nf.format(task.getTimeNanos())).append("  ");
-                sb.append(pf.format((double) task.getTimeNanos() / (double) this.getTotalTimeNanos())).append("  ");
-                sb.append(task.getTaskName()).append("\n");
-            }
+        for (TaskInfo task : taskInfos) {
+            sb.append(nf.format(task.getNanos())).append("  ");
+            sb.append(pf.format((double) task.getNanos() / (double) this.getTotalTimeNanos())).append("  ");
+            sb.append(task.getName()).append("\n");
         }
 
         return sb.toString();
@@ -250,16 +272,13 @@ public class StopWatch {
 
     public String toString() {
         StringBuilder sb = new StringBuilder(this.shortSummary());
-        if (this.keepTaskList) {
-            StopWatch.TaskInfo[] taskInfos = this.getTaskInfo();
 
-            for (TaskInfo task : taskInfos) {
-                sb.append("; [").append(task.getTaskName()).append("] took ").append(task.getTimeNanos()).append(" ns");
-                long percent = Math.round(100.0D * (double) task.getTimeNanos() / (double) this.getTotalTimeNanos());
-                sb.append(" = ").append(percent).append("%");
-            }
-        } else {
-            sb.append("; no task info kept");
+        StopWatch.TaskInfo[] taskInfos = this.getTaskInfo();
+
+        for (TaskInfo task : taskInfos) {
+            sb.append("; [").append(task.getName()).append("] took ").append(task.getNanos()).append(" ns");
+            long percent = Math.round(100.0D * (double) task.getNanos() / (double) this.getTotalTimeNanos());
+            sb.append(" = ").append(percent).append("%");
         }
 
         return sb.toString();
@@ -273,29 +292,56 @@ public class StopWatch {
         return (double) duration / 1.0E9D;
     }
 
+    private StopWatch.TaskInfo[] getTaskInfo() {
+        return this.taskList.toArray(new TaskInfo[0]);
+    }
+
     public static final class TaskInfo {
-        private final String taskName;
-        private final long timeNanos;
 
-        TaskInfo(String taskName, long timeNanos) {
-            this.taskName = taskName;
-            this.timeNanos = timeNanos;
-        }
+        @Getter
+        @Setter
+        private String name;
 
-        public String getTaskName() {
-            return this.taskName;
-        }
+        @Getter
+        @Setter
+        private long nanos;
 
-        public long getTimeNanos() {
-            return this.timeNanos;
+        @Getter
+        @Setter
+        private StatusType status;
+
+
+        TaskInfo(String name, long timeNanos, StatusType status) {
+            this.name = name;
+            this.nanos = timeNanos;
+            this.status = status;
         }
 
         public long getTimeMillis() {
-            return StopWatch.nanosToMillis(this.timeNanos);
+            Long temp = getNanoLong();
+            return StopWatch.nanosToMillis(temp);
         }
 
         public double getTimeSeconds() {
-            return StopWatch.nanosToSeconds(this.timeNanos);
+            Long temp = getNanoLong();
+            return StopWatch.nanosToSeconds(temp);
+        }
+
+        private Long getNanoLong() {
+            Long temp = null;
+            switch (status) {
+                case NOT_STARTED:
+                    temp = 0L;
+                    break;
+                case UNDER_WAY:
+                    temp = System.nanoTime() - nanos;
+                    break;
+                case FINISHED:
+                    temp = nanos;
+                    break;
+            }
+            return temp;
         }
     }
+
 }

@@ -2,6 +2,7 @@ package org.wch.commons;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.wch.commons.io.FileUtils;
 import org.wch.commons.lang.StringUtils;
 
 import java.io.*;

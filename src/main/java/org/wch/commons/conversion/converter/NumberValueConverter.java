@@ -5,6 +5,7 @@ import org.wch.commons.lang.BooleanUtils;
 import org.wch.commons.lang.ObjectUtils;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Optional;
 
 @NoArgsConstructor
@@ -51,6 +52,9 @@ public class NumberValueConverter<T> extends AbstractConverter<T> {
                 break;
             case "BigDecimal":
                 result = Optional.of(requiredType.cast(new BigDecimal(obj.toString())));
+                break;
+            case "BigInteger":
+                result = Optional.of(requiredType.cast(new BigInteger(obj.toString())));
                 break;
             default:
                 // 其他数据类型不进行转换

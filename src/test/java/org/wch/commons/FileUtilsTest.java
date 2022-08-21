@@ -3,6 +3,7 @@ package org.wch.commons;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.wch.commons.io.FileUtils;
 
 @RunWith(JUnit4.class)
 public class FileUtilsTest {

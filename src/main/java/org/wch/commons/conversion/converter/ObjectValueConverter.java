@@ -3,6 +3,8 @@ package org.wch.commons.conversion.converter;
 import lombok.NoArgsConstructor;
 import org.wch.commons.lang.ObjectUtils;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -26,6 +28,15 @@ public class ObjectValueConverter<T> extends AbstractConverter<T> {
         if (ObjectUtils.anyNull(obj, requiredType)) {
             return Optional.empty();
         }
+        // todo
+        /*Optional<T> result = Optional.empty();
+        if (Collection.class.isAssignableFrom(requiredType)) {
+
+        } else if (ObjectUtils.equals(Map.class, requiredType)) {
+
+        } else {
+            result = caseJsonStrConvert();
+        }*/
 
         return caseJsonStrConvert();
     }

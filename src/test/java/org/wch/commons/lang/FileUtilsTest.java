@@ -3,7 +3,7 @@ package org.wch.commons.lang;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.wch.commons.FileUtils;
+import org.wch.commons.io.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
