@@ -3,7 +3,9 @@ package org.wch.commons;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.wch.commons.conversion.SimpleTypeConverter;
 import org.wch.commons.lang.ConvertUtils;
+import org.wch.commons.model.SampleBean;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -81,6 +83,20 @@ public class ConvertUtilsTest {
             System.out.println("result 2 is:" + aByte);
         }
 
+    }
+
+    @Test
+    public void test5(){
+        AddressVO addressVO = new AddressVO();
+
+        addressVO.setProvince("湖南省");
+        addressVO.setCity("长沙市");
+        addressVO.setDistrict("望城区xxxx" + 0 + "号");
+        addressVO.setDetail("xxxx团结路幸福街" + 1 + "号");
+        final SampleBean adadfadf = new SampleBean("adadfadf", 20, 25);
+        addressVO.setSampleBean(adadfadf);
+        final Optional<Address> address = SimpleTypeConverter.convertIfNecessary(addressVO, Address.class);
+        address.ifPresent(address1 -> System.out.println("resutli si " + address1));
     }
 
     public static byte[] hexStringToBytes(String hexString) {

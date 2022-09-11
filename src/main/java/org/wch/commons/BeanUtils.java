@@ -40,19 +40,6 @@ public class BeanUtils {
 
     private final static CustomConverter customConverter = new CustomConverter();
 
-  /*  @Deprecated
-    public static void copyProperties22(Object source, Object target) {
-        final Class<?> sourceClass = source.getClass();
-        final Class<?> targetClass = target.getClass();
-        BeanCopier copier = BeanCopier.create(sourceClass, targetClass, true);
-        addClassFieldPd(sourceClass);
-        addClassFieldPd(targetClass);
-//        customConverter.setSourceClass(sourceClass);
-//        customConverter.setTargetClass(targetClass);
-        copier.copy(source, target, customConverter);
-
-    }*/
-
     public static void copyProperties(Object source, Object target) {
         final Class<?> sourceClass = source.getClass();
         final Class<?> targetClass = target.getClass();

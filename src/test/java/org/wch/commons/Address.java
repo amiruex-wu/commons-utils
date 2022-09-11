@@ -1,6 +1,7 @@
 package org.wch.commons;
 
 import lombok.Data;
+import org.wch.commons.model.OtherSampleBean;
 
 /**
  * @Description: TODO
@@ -15,4 +16,6 @@ public class Address {
     private String city;
     private String district;
     private String moreInfo;
+
+    private OtherSampleBean sampleBean;
 }

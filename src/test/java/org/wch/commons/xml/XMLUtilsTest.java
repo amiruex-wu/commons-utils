@@ -6,9 +6,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import org.wch.commons.Person;
+import org.wch.commons.StopWatch;
 import org.wch.commons.beans.XMLAttribute;
 import org.wch.commons.enums.XMLOperateType;
-import org.wch.commons.StopWatch1;
 import org.wch.commons.lang.StringUtils;
 import org.wch.commons.text.XMLUtils;
 
@@ -197,7 +197,7 @@ public class XMLUtilsTest {
         objects.add(map);
         properties.put("data3", objects);
         String parentPath = "/studentClass";
-        final StopWatch1 stopWatch1 = StopWatch1.create();
+        final StopWatch stopWatch1 = StopWatch.create();
         XMLAttribute xmlAttribute = new XMLAttribute("name", "李四", parentPath, true, XMLOperateType.GENERAL, properties);
         final Optional<String> optional = XMLUtils.buildElement(properties, XMLOperateType.GENERAL);
         System.out.println("result is " + optional.orElse(null));

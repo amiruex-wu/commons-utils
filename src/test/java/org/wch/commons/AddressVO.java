@@ -1,6 +1,7 @@
 package org.wch.commons;
 
 import lombok.Data;
+import org.wch.commons.model.SampleBean;
 
 import java.io.Serializable;
 
@@ -16,4 +17,6 @@ public class AddressVO implements Serializable {
     private String city;
     private String district;
     private String detail;
+
+    private SampleBean sampleBean;
 }

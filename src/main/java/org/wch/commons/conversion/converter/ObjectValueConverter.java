@@ -1,12 +1,18 @@
 package org.wch.commons.conversion.converter;
 
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import org.wch.commons.BeanUtils;
 import org.wch.commons.beans.FieldPropertyDescriptor;
 import org.wch.commons.conversion.SimpleTypeConverter;
 import org.wch.commons.lang.ObjectUtils;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 /**
@@ -23,15 +29,15 @@ public class ObjectValueConverter<T> extends AbstractConverter<T> {
 
     @Override
     public Optional<T> convert() {
-        return convert(source, requiredType);
+        return (Optional<T>) convert(source, requiredType);
     }
 
     // todo 待重新实现算法
-    private Optional<T> convert(Object source, Class<T> requiredType) {
-        if (ObjectUtils.anyNull(source, requiredType)) {
+    private Optional<?> convert(Object source, Class<?> requiredType) {
+        if (ObjectUtils.anyNull(source, requiredType) || Class.class.equals(requiredType)) {
             return Optional.empty();
         }
-        System.out.println("ObjectConvert执行过程....");
+//        System.out.println("ObjectConvert执行过程....");
 
         // 获得属性
         final Class<?> sourceClass = source.getClass();
@@ -50,219 +56,153 @@ public class ObjectValueConverter<T> extends AbstractConverter<T> {
             }
             FieldPropertyDescriptor sourceFieldPD = optional.get();
             try {
-                final Field sourceField = sourceFieldPD.getField();
-                sourceField.setAccessible(true);
-                final Field targetField = targetFieldPD.getField();
-                targetField.setAccessible(true);
-                final Object invoke = sourceField.get(source);
+                final Method readMethod = sourceFieldPD.getReadMethod();
+                final Method writerMethod = targetFieldPD.getWriterMethod();
+                final Object invoke = readMethod.invoke(source);
                 if (Objects.isNull(invoke)) {
                     continue;
                 }
-
-                // 判断双方是相同类型
-                if (ObjectUtils.equals(targetFieldPD.getType(), sourceFieldPD.getType())) {
-                    targetField.set(target, invoke);
-                } else if (basicClass.contains(sourceField.getType()) && basicClass.contains(targetField.getType())) {
-                    // 判断双方都是基础类型
-                    final Optional<?> optional1 = SimpleTypeConverter.convertIfNecessary(invoke, targetField.getType());
-                    targetField.set(target, optional1.orElse(null));
-                } else if (invoke instanceof Collection && Collection.class.isAssignableFrom(targetField.getType())) {
-                    // 双方都是集合类型
-                    Collection collection = (Collection) invoke;
-                    if (Objects.equals(sourceFieldPD.getListActualTypeArgument(), targetFieldPD.getListActualTypeArgument())) {
-                        targetField.set(target, collection);
-                    } else {
-                        List<Object> list = new ArrayList<>();
-                        for (Object obj : collection) {
-                            final Optional<?> optional1 = convert0(obj, targetFieldPD.getListActualTypeArgument());
-                            optional1.ifPresent(list::add);
-                        }
-                        targetField.set(target, list);
+                if (Objects.equals(sourceFieldPD.getType(), targetFieldPD.getType())
+                        && (BeanUtils.GENERAL_CLASS.contains(targetFieldPD.getType())
+                        || BeanUtils.DATE_TIME_CLASS.contains(targetFieldPD.getType()))) {
+                    writerMethod.invoke(target, invoke);
+                } else if (Objects.equals(sourceFieldPD.getType(), targetFieldPD.getType())
+                        && Map.class.isAssignableFrom(targetFieldPD.getType())) {
+                    final HashMap<Object, Object> objectObjectHashMap = new HashMap<>();
+                    final Map<Object, Object> temp = (Map<Object, Object>) invoke;
+                    for (Map.Entry<Object, Object> entry : temp.entrySet()) {
+                        objectObjectHashMap.put(entry.getKey(), entry.getValue());
                     }
-                } else {
-                    // 其他类型
-                    final Optional<?> optional1 = SimpleTypeConverter.convertIfNecessary(invoke, targetField.getType());
-                    targetField.set(target, optional1.orElse(null));
+                    writerMethod.invoke(target, objectObjectHashMap);
+                } else if (Objects.equals(sourceFieldPD.getType(), targetFieldPD.getType())
+                        && Collection.class.isAssignableFrom(targetFieldPD.getType())) {
+                    // 同为集合对象
+                    final Object object = getObjectByRequireType(invoke, sourceFieldPD, targetFieldPD);
+                    writerMethod.invoke(target, object);
+                } else if ((BeanUtils.GENERAL_CLASS.contains(targetFieldPD.getType()) && BeanUtils.GENERAL_CLASS.contains(sourceFieldPD.getType()))
+                        || (BeanUtils.GENERAL_CLASS.contains(targetFieldPD.getType()) && BeanUtils.DATE_TIME_CLASS.contains(sourceFieldPD.getType()))
+                        || (BeanUtils.DATE_TIME_CLASS.contains(targetFieldPD.getType()) && BeanUtils.DATE_TIME_CLASS.contains(sourceFieldPD.getType()))
+                        || (BeanUtils.DATE_TIME_CLASS.contains(targetFieldPD.getType()) && BeanUtils.GENERAL_CLASS.contains(sourceFieldPD.getType()))) {
+                    // all of those are general class
+                    final Optional<?> result1 = SimpleTypeConverter.convertIfNecessary(invoke, targetFieldPD.getType());
+                    if (result1.isPresent()) {
+                        writerMethod.invoke(target, result1.get());
+                    }
+                } else if (Collection.class.isAssignableFrom(targetFieldPD.getType())
+                        && Collection.class.isAssignableFrom(sourceFieldPD.getType())) {
+                    // 同为集合对象
+                    final Object object = getObjectByRequireType(invoke, sourceFieldPD, targetFieldPD);
+                    writerMethod.invoke(target, object);
+                } else if (!Map.class.isAssignableFrom(targetFieldPD.getType())
+                        && !Map.class.isAssignableFrom(sourceFieldPD.getType())) {
+                    // 自定义对象类型
+                  /*  Object targetTemp = targetFieldPD.getType().newInstance();
+                    BeanUtils.copyProperties(invoke, targetTemp);*/
+
+                    final Optional<?> convert = convert(invoke, targetFieldPD.getType());
+                    if (convert.isPresent()) {
+                        writerMethod.invoke(target, convert.get());
+                    }
                 }
-            } catch (IllegalAccessException e) {
+
+            } catch (IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
             }
         }
         return Optional.of((T) target);
     }
 
-    private Optional<?> convert0(Object source, Class<?> requiredType) {
-        if (ObjectUtils.anyNull(source, requiredType)) {
-            return Optional.empty();
-        }
-
-        // 获得属性
-        final Class<?> sourceClass = source.getClass();
-        final Object target;
-        try {
-            target = requiredType.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-            return Optional.empty();
-        }
-        final FieldPropertyDescriptor[] propertyDescriptor = getPropertyDescriptor(requiredType);
-        for (FieldPropertyDescriptor targetFieldPD : propertyDescriptor) {
-            final Optional<FieldPropertyDescriptor> optional = getPropertyDescriptor(sourceClass, targetFieldPD.getName());
-            if (!optional.isPresent()) {
-                continue;
-            }
-            FieldPropertyDescriptor sourceFieldPD = optional.get();
-            try {
-                final Field sourceField = sourceFieldPD.getField();
-                sourceField.setAccessible(true);
-                final Field targetField = targetFieldPD.getField();
-                targetField.setAccessible(true);
-                final Object invoke = sourceField.get(source);
-                if (Objects.isNull(invoke)) {
-                    continue;
-                }
-
-                // 判断双方是相同类型
-                if (ObjectUtils.equals(targetFieldPD.getType(), sourceFieldPD.getType())) {
-                    targetField.set(target, invoke);
-                } else if (basicClass.contains(sourceField.getType()) && basicClass.contains(targetField.getType())) {
-                    // 判断双方都是基础类型
-                    final Optional<?> optional1 = SimpleTypeConverter.convertIfNecessary(invoke, targetField.getType());
-                    targetField.set(target, optional1.orElse(null));
-                } else if (invoke instanceof Collection && Collection.class.isAssignableFrom(targetField.getType())) {
-                    // 双方都是集合类型
-                    Collection collection = (Collection) invoke;
-                    if (Objects.equals(sourceFieldPD.getListActualTypeArgument(), targetFieldPD.getListActualTypeArgument())) {
-                        targetField.set(target, collection);
-                    } else {
-                        List<Object> list = new ArrayList<>();
-                        for (Object obj : collection) {
-                            final Optional<?> optional1 = convert0(obj, targetFieldPD.getListActualTypeArgument());
-                            optional1.ifPresent(item -> list.add(item));
-                        }
-                        targetField.set(target, list);
-                    }
-                } else {
-                    // 其他类型
-                    final Optional<?> optional1 = SimpleTypeConverter.convertIfNecessary(invoke, targetField.getType());
-                    targetField.set(target, optional1.orElse(null));
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-      /*
-
-
-        final Class<?> sourceClass = source.getClass();
-        final Field[] sourceFields = sourceClass.getDeclaredFields();
-        final Field[] targetFields = requiredType.getDeclaredFields();
-        final List<Field> fields = Arrays.asList(sourceFields);
-
-
-        for (Field targetField : targetFields) {
-            final Optional<Field> optional = fields.stream()
-                    .filter(item -> Objects.equals(targetField.getName(), item.getName()))
-                    .findAny();
-            if (optional.isPresent()) {
-                final Field sourceField = optional.get();
-                try {
-                    PropertyDescriptor sourcePd = new PropertyDescriptor(sourceField.getName(), sourceClass);
-                    PropertyDescriptor targetPd = new PropertyDescriptor(targetField.getName(), requiredType);
-                    // 获得get方法
-                    Method getMethod = sourcePd.getReadMethod();
-
-                    // 此处为执行该Object对象的get方法
-                    Object invoke = getMethod.invoke(source);
-                    Method writeMethod = targetPd.getWriteMethod();
-
-                    // 判断双方都是基础类型且相同类型
-                    if (basicClass.contains(sourceField.getType())
-                            && basicClass.contains(targetField.getType())
-                            && ObjectUtils.equals(sourceField.getType(), targetField.getType())) {
-                        writeMethod.invoke(target, invoke);
-                    } else if (basicClass.contains(sourceField.getType()) && basicClass.contains(targetField.getType())) {
-                        // 判断双方都是基础类型
-                        final Optional<?> optional1 = ConvertFactory.getConverter0(invoke, targetField.getType());
-                        writeMethod.invoke(target, optional1.orElse(null));
-                    } else if (invoke instanceof Collection && Collection.class.isAssignableFrom(targetField.getType())) {
-                        // 双方都是集合类型
-                        Collection collection = (Collection) invoke;
-                        Type genericType = targetField.getGenericType();
-                        if (genericType instanceof ParameterizedType) {
-                            ParameterizedType pt = (ParameterizedType) genericType;
-                            // 得到泛型里的class类型对象
-                            Class<?> actualTypeArgument = (Class<?>) pt.getActualTypeArguments()[0];
-
-                            if (basicClass.contains(actualTypeArgument)) {
-                                writeMethod.invoke(target, collection);
-                            } else {
-                                List<Object> list = new ArrayList<>();
-                                for (Object obj1 : collection) {
-                                    Optional<AbstractConverter<?>> converter = ConvertFactory.getConverter0(obj1, targetField.getType());
-                                    converter.flatMap(AbstractConverter::convert).ifPresent(list::add);
-                                }
-                                writeMethod.invoke(target, list);
-                            }
-                        }
-                    } else if (!basicClass.contains(sourceField.getType())
-                            && !basicClass.contains(targetField.getType())
-                            && ObjectUtils.equals(targetField.getType(), sourceField.getType())) {
-                        // 普通自定义对象
-                        Optional<AbstractConverter<?>> converter = ConvertFactory.getConverter0(invoke, targetField.getType());
-                        if (converter.isPresent()) {
-                            final Optional<?> convert = converter.get().convert();
-                            writeMethod.invoke(target, convert.orElse(null));
-                        }
-                    } else {
-                        // 其他类型
-                        final Optional<AbstractConverter<?>> converter0 = ConvertFactory.getConverter0(invoke, targetField.getType());
-                        if (converter0.isPresent()) {
-                            final Optional<?> convert = converter0.get().convert();
-                            writeMethod.invoke(target, convert.orElse(null));
-                        }
-                    }
-                } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-            }
-        }*/
-        return Optional.of((T) target);
-    }
-
+    /**
+     * 获取类中的所有属性
+     *
+     * @param clazz
+     * @return
+     */
+    @SneakyThrows
     public static FieldPropertyDescriptor[] getPropertyDescriptor(Class<?> clazz) {
         if (classFieldPD.containsKey(clazz)) {
             return classFieldPD.get(clazz);
         }
-        final Field[] declaredFields = clazz.getDeclaredFields();
-        int length = declaredFields.length;
-        FieldPropertyDescriptor[] var1 = new FieldPropertyDescriptor[length];
-        for (int i = 0; i < length; i++) {
-            var1[i] = new FieldPropertyDescriptor(declaredFields[i]);
-        }
-        System.out.println("jinru。。。。。1-2");
-        classFieldPD.put(clazz, var1);
-        return var1;
-    }
+        final BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
+        final PropertyDescriptor[] var1 = beanInfo.getPropertyDescriptors();
 
-    public static <T> Optional<FieldPropertyDescriptor> getPropertyDescriptor(Class<?> clazz, String propertyName) {
-        if (classFieldPD.containsKey(clazz)) {
-            return Stream.of(classFieldPD.get(clazz)).filter(item -> Objects.equals(item.getName(), propertyName)).findFirst();
-        }
-        FieldPropertyDescriptor result = null;
-        final Field[] fields = clazz.getDeclaredFields();
-        int length = fields.length;
-        FieldPropertyDescriptor[] var2 = new FieldPropertyDescriptor[length];
-        for (int i = 0; i < length; i++) {
-            var2[i] = new FieldPropertyDescriptor(fields[i]);
-            if (Objects.equals(fields[i].getName(), propertyName)) {
-                result = var2[i];
-            }
-        }
-        System.out.println("jinru。。。。。1-2-1");
+        final FieldPropertyDescriptor[] var2 = Arrays.stream(var1)
+                .filter(item -> !Class.class.equals(item.getPropertyType()))
+                .map(FieldPropertyDescriptor::new)
+                .toArray(FieldPropertyDescriptor[]::new);
         classFieldPD.put(clazz, var2);
-        return Optional.ofNullable(result);
+        return var2;
     }
 
+    /**
+     * 获取类中定义的指定属性
+     *
+     * @param clazz
+     * @param propertyName
+     * @return
+     */
+    @SneakyThrows
+    public static Optional<FieldPropertyDescriptor> getPropertyDescriptor(Class<?> clazz, String propertyName) {
+        if (classFieldPD.containsKey(clazz)) {
+            return Stream.of(classFieldPD.get(clazz))
+                    .filter(item -> Objects.nonNull(item) && Objects.equals(item.getName(), propertyName))
+                    .findFirst();
+        }
+        AtomicReference<FieldPropertyDescriptor> result = new AtomicReference<>(null);
+        final BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
+        final PropertyDescriptor[] var1 = beanInfo.getPropertyDescriptors();
 
+        final FieldPropertyDescriptor[] var2 = Arrays.stream(var1)
+                .filter(item -> !Class.class.equals(item.getPropertyType()))
+                .map(item -> {
+                    final FieldPropertyDescriptor temp = new FieldPropertyDescriptor(item);
+                    if (Objects.equals(temp.getName(), propertyName)) {
+                        result.set(temp);
+                    }
+                    return temp;
+                })
+                .toArray(FieldPropertyDescriptor[]::new);
+        classFieldPD.put(clazz, var2);
+        return Optional.ofNullable(result.get());
+    }
+
+    /**
+     * TODO 转换集合类型的数据
+     *
+     * @param source
+     * @param sourcePD
+     * @param targetPD
+     * @return
+     */
+    private Object getObjectByRequireType(Object source, FieldPropertyDescriptor sourcePD, FieldPropertyDescriptor targetPD) {
+        final Collection<Object> source1 = (Collection<Object>) source;
+        final Class<?> sourceActualParamType = sourcePD.getListActualTypeArgument();
+        final Class<?> targetActualParamType = targetPD.getListActualTypeArgument();
+        final boolean isSetCollection = Set.class.isAssignableFrom(targetPD.getType());
+        Collection<Object> result;
+        if (isSetCollection) {
+            result = new HashSet<>();
+        } else {
+            result = new ArrayList<>();
+        }
+        if (Objects.equals(sourceActualParamType, targetActualParamType) && BeanUtils.GENERAL_CLASS.contains(targetActualParamType)) {
+            result.addAll(source1);
+        } else {
+            source1.stream()
+                    .filter(Objects::nonNull)
+                    .map(o -> {
+                        try {
+                            Object targetTemp = targetActualParamType.newInstance();
+                            BeanUtils.copyProperties(o, targetTemp);
+                            return targetTemp;
+                        } catch (InstantiationException | IllegalAccessException e) {
+                            e.printStackTrace();
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .forEach(result::add);
+        }
+        return result;
+    }
 }

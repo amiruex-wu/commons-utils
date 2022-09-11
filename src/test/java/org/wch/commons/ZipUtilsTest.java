@@ -16,12 +16,12 @@ public class ZipUtilsTest {
     @Test
     public void test() throws InterruptedException {
 
-        StopWatch1 stopWatch1 = new StopWatch1();
+        StopWatch stopWatch1 = new StopWatch();
 
         // 任务一模拟休眠3秒钟
         stopWatch1.start("TaskOneName");
         Thread.sleep(1000 * 3);
-        System.out.println("当前任务名称：" + stopWatch1.currentTaskName());
+        System.out.println("当前任务名称：" + stopWatch1.getLastTaskName());
         stopWatch1.stop();
         System.out.println(stopWatch1.prettyPrint());
         System.out.println("耗时：" + stopWatch1.getTotalTimeMillis() + "ms");
@@ -31,25 +31,25 @@ public class ZipUtilsTest {
     @Test
     public void test1() throws InterruptedException {
 
-        StopWatch1 stopWatch1 = StopWatch1.createStarted("TaskOneName");
+        StopWatch stopWatch1 = StopWatch.create("TaskOneName");
 
         // 任务一模拟休眠3秒钟
 //        stopWatch.start("TaskOneName");
         Thread.sleep(1000 * 3);
-        System.out.println("当前任务名称：" + stopWatch1.currentTaskName().orElse(null));
+        System.out.println("当前任务名称：" + stopWatch1.getLastTaskName().orElse(null));
         stopWatch1.stop();
 
         System.out.println("耗时：" + stopWatch1.getTotalTimeMillis() + "ms");
         stopWatch1.start("TaskTwoName");
         Thread.sleep(1000 * 5);
-        System.out.println("当前任务名称：" + stopWatch1.currentTaskName().orElse(null));
+        System.out.println("当前任务名称：" + stopWatch1.getLastTaskName().orElse(null));
         stopWatch1.stop();
 //        logger.info("耗时：{}ms", stopWatch.getTotalTimeMillis());
         // 打印出耗时
         System.out.println(stopWatch1.prettyPrint());
         System.out.println(stopWatch1.shortSummary());
         // stop后它的值为null
-        System.out.println(stopWatch1.currentTaskName().orElse(null));
+        System.out.println(stopWatch1.getLastTaskName().orElse(null));
 
         // 最后一个任务的相关信息
         System.out.println(stopWatch1.getLastTaskName().orElse(null));
@@ -58,7 +58,7 @@ public class ZipUtilsTest {
         // 任务总的耗时  如果你想获取到每个任务详情（包括它的任务名、耗时等等）可使用
         System.out.println("所有任务总耗时：" + stopWatch1.getTotalTimeMillis());
         System.out.println("任务总数：" + stopWatch1.getTaskCount());
-        System.out.println("所有任务详情：" + Arrays.toString(stopWatch1.getTaskInfo()));
+//        System.out.println("所有任务详情：" + Arrays.toString(stopWatch1.getTaskInfo()));
     }
 
     @Test

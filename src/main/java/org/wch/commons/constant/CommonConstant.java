@@ -5,9 +5,7 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Description: TODO
@@ -17,10 +15,17 @@ import java.util.Map;
  */
 public class CommonConstant {
 
-    public final static Class<?>[] BASIC_NUM_STR_CLAZZ = {Byte.class, Short.class, Integer.class, Float.class, Double.class,
+   /* public final static Class<?>[] BASIC_NUM_STR_CLAZZ = {Byte.class, Short.class, Integer.class, Float.class, Double.class,
             Long.class, BigDecimal.class, BigInteger.class, String.class, Boolean.class, Character.class, Map.class,
             byte.class, short.class, int.class, float.class, double.class,
-            long.class, boolean.class, char.class};
+            long.class, boolean.class, char.class};*/
+
+
+    public static final List<Class<?>> GENERAL_CLASS = Arrays.asList(
+            byte.class, short.class, int.class, float.class, double.class, long.class, boolean.class, char.class,
+            Byte.class, Short.class, Integer.class, Float.class, Double.class, Long.class, Boolean.class, BigDecimal.class, BigInteger.class,
+            Character.class, String.class);
+
 
     public final static Class<?>[] BASIC_DATE_TIME_CLAZZ = {LocalDateTime.class, LocalDate.class, Date.class, Calendar.class, LocalTime.class};
 
