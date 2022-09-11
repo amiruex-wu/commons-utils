@@ -75,6 +75,13 @@
             <version>2.2.7</version>
         </dependency>
 
+        <!-- 使用cglib依赖库 -->
+        <!-- https://mvnrepository.com/artifact/cglib/cglib-nodep -->
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <version>3.3.0</version>
+        </dependency>
 
         <!-- &lt;!&ndash; 引入log4j2日志框架 &ndash;&gt;
          <dependency>

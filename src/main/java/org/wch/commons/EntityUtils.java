@@ -25,11 +25,6 @@ import java.util.stream.Collectors;
 @Deprecated
 public class EntityUtils {
 
-    private final static Class<?>[] BASIC_CLAZZ = {Byte.class, Short.class, Integer.class, Float.class, Double.class,
-            Long.class, BigDecimal.class, BigInteger.class, String.class, Boolean.class, Character.class,
-            byte.class, short.class, int.class, float.class, double.class,
-            long.class, boolean.class, char.class, Map.class};
-
     public static <T> void setFieldValue(T t, Map<String, Object> fieldValues) {
         setFieldValue(t, fieldValues, true);
     }

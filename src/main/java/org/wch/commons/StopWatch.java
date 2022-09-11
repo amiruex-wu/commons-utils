@@ -154,6 +154,20 @@ public class StopWatch {
     /**
      * 获取最后一个任务耗时
      *
+     * @param stopWatch 是否停止所有计时
+     * @return 返回耗时纳秒数
+     * @throws IllegalStateException
+     */
+    public Optional<Long> getLastTaskTimeNanos(boolean stopWatch) throws IllegalStateException {
+        if (stopWatch) {
+            stop();
+        }
+        return getLastTaskTimeNanos();
+    }
+
+    /**
+     * 获取最后一个任务耗时
+     *
      * @return 返回耗时毫秒数
      * @throws IllegalStateException
      */
@@ -163,6 +177,20 @@ public class StopWatch {
         } else {
             return Optional.of(this.lastTaskInfo.getTimeMillis());
         }
+    }
+
+    /**
+     * 获取最后一个任务耗时
+     *
+     * @param stopWatch 是否停止所有计时
+     * @return 返回耗时毫秒数
+     * @throws IllegalStateException
+     */
+    public Optional<Long> getLastTaskTimeMillis(boolean stopWatch) throws IllegalStateException {
+        if (stopWatch) {
+            stop();
+        }
+        return getLastTaskTimeMillis();
     }
 
     /**
@@ -210,6 +238,19 @@ public class StopWatch {
             return nanosToMillis(total);
         }
         return nanosToMillis(this.totalTimeNanos);
+    }
+
+    /**
+     * 获取任务总耗时
+     *
+     * @param stopWatch 是否停止所有计时
+     * @return 毫秒数
+     */
+    public long getTotalTimeMillis(boolean stopWatch) {
+        if (stopWatch) {
+            stop();
+        }
+        return getTotalTimeMillis();
     }
 
     /**

@@ -43,22 +43,22 @@ public class StringValueConverter<T> extends AbstractConverter<T> {
                 result = Optional.of(requiredType.cast(obj.toString()));
                 break;
             case "Byte":
-                result = castToRequiredType(obj.getClass(), requiredType, "byteValue", s);
+                result = Optional.of(requiredType.cast(Byte.valueOf(obj.toString())));
                 break;
             case "Short":
-                result = castToRequiredType(obj.getClass(), requiredType, "shortValue", s);
+                result = Optional.of(requiredType.cast(Short.valueOf(obj.toString())));
                 break;
             case "Integer":
-                result = castToRequiredType(obj.getClass(), requiredType, "intValue", s);
+                result = Optional.of(requiredType.cast(Integer.valueOf(obj.toString())));
                 break;
             case "Long":
-                result = castToRequiredType(obj.getClass(), requiredType, "longValue", s);
+                result = Optional.of(requiredType.cast(Long.valueOf(obj.toString())));
                 break;
             case "Double":
-                result = castToRequiredType(obj.getClass(), requiredType, "doubleValue", temp);
+                result = Optional.of(requiredType.cast(Double.valueOf(obj.toString())));
                 break;
             case "Float":
-                result = castToRequiredType(obj.getClass(), requiredType, "floatValue", temp);
+                result = Optional.of(requiredType.cast(Float.valueOf(obj.toString())));
                 break;
             case "Boolean":
                 result = Optional.of(requiredType.cast(BooleanUtils.toBoolean(s)));
@@ -80,7 +80,8 @@ public class StringValueConverter<T> extends AbstractConverter<T> {
                 break;
             default:
                 // 其他类型处理
-                result = caseJsonStrConvert();
+//                result = caseJsonStrConvert();
+                result = Optional.empty();
                 break;
         }
         return result;

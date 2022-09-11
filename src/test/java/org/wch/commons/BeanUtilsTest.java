@@ -1,156 +1,202 @@
 package org.wch.commons;
 
+import net.sf.cglib.beans.BeanCopier;
+import net.sf.cglib.beans.BeanGenerator;
+import net.sf.cglib.beans.BeanMap;
+import net.sf.cglib.core.Converter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.wch.commons.model.*;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * @Description: TODO
  * @Author: wuchu
- * @CreateTime: 2022-07-13 17:22
+ * @CreateTime: 2022-09-07 13:57
  */
 @RunWith(JUnit4.class)
 public class BeanUtilsTest {
 
     @Test
     public void test() {
-        Person person = new Person();
-        Person person1 = new Person();
-        person.setUserName("aaaa");
-        person.setPassword("aaaaerererere");
-        person.setAge(20);
-        Object o = BeanUtils.copyProperties(person, Person.class);
-        System.out.println("person1 is " + o);
+        SampleBean sampleBean = new SampleBean("Hello world", 100, 61);
+        OtherSampleBean otherSampleBean = new OtherSampleBean();
+        BeanUtils.copyProperties(sampleBean, otherSampleBean);
+        System.out.println("otherSampleBean value is " + otherSampleBean.toString());
+    }
 
+    @Test
+    public void test0() {
+        Float fload = Float.valueOf("22.22");
+        BeanCopier copier = BeanCopier.create(Float.class, Integer.class, false);
+       Integer target = 0;
+        copier.copy(fload, target, null);
+        System.out.println("otherSampleBean value is " + target);
     }
 
     @Test
     public void test1() {
-        Person person = new Person();
-        Person person1 = new Person();
-        person.setUserName("aaaa");
-        person.setPassword("aaaaerererere");
-        person.setAge(20);
-        Object o = BeanUtils.copyProperties(person, Person.class);
-        System.out.println("person1 is " + o);
-
+        List<PersonB> list = new ArrayList<>();
+        for (int i = 0; i < 100000; i++) {
+            list.add(new PersonB("username" + i, "adfadfwef" + i, new PersonC("personC" + i, "pawword" + i)));
+        }
+        long l = System.currentTimeMillis();
+        List<PersonB> collect = list.stream().map(personB -> {
+            PersonB temp = new PersonB();
+//            org.springframework.beans.BeanUtils.copyProperties(personB, temp);
+//            BeanUtils1.copy(personB, temp);
+            BeanUtils.copyValue(personB, temp);
+            return temp;
+        }).collect(Collectors.toList());
+        System.out.println("执行用例-->" + collect.size() + "，耗时:" + (System.currentTimeMillis() - l) + "ms");
+        for (int i = 0; i < 10; i++) {
+            System.out.println("result is " + collect.get(i).toString());
+        }
     }
 
     @Test
     public void test2() {
-        Person person = new Person();
-        Person1 person1 = new Person1();
-        person.setUserName("aaaa");
-        person.setPassword("aaaaerererere");
-        person.setAge(20);
-        person.setNickName("John simith");
-        person.setPhone("151255455252");
-        person.setEmail("151255455252@qq.com");
-        person.setIdCardNo1("5515125545525");
-        AddressVO addressVO = new AddressVO();
-        addressVO.setProvince("湖南省");
-        addressVO.setCity("长沙市");
-        addressVO.setDistrict("望城区");
-        person.setAddress(addressVO);
-        person.setEmergencyLinkMan("赵市明");
-        final StopWatch stopWatch1 = StopWatch.create();
-//        try {
-//            BeanUtils.getMethod(person);
-//        } catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
-//            e.printStackTrace();
-//        }
-        BeanUtils.copyProperties(person, person1, false);
-        System.out.println("person1 read cost time is " + stopWatch1.getTotalTimeMillis() + "ms");
-        System.out.println("person1 is " + person1);
-
+        List<PersonB> list = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            list.add(new PersonB("username" + i, "adfadfwef" + i, new PersonC("personC" + i, "pawword" + i)));
+        }
+        long l = System.currentTimeMillis();
+        List<PersonD> collect = list.stream().map(personB -> {
+            PersonD temp = new PersonD();
+//            org.springframework.beans.BeanUtils.copyProperties(personB, temp);
+//            BeanUtils1.copy(personB, temp);
+//            Copy.copyValue(personB, temp);
+            BeanUtils.copyProperties(personB, temp);
+            return temp;
+        }).collect(Collectors.toList());
+        System.out.println("执行用例-->" + collect.size() + "，耗时:" + (System.currentTimeMillis() - l) + "ms");
+        for (int i = 0; i < 10; i++) {
+            System.out.println("result is " + collect.get(i).toString());
+        }
     }
 
     @Test
     public void test3() {
-        // todo 待优化
-
-        List<Person> temp = new ArrayList<>();
-        Map<String, Object> map = new HashMap<>();
-        map.put("key", 1222);
-        List<String> list = new ArrayList<>();
-        list.add("aaaaa");
-        list.add("aaaaa1");
-        int size = 10;
-        // 1000     --> 372ms
-        // 10000    --> 1107ms
-        // 100000   --> 5562ms
-        // 1000000  --> 46649ms
-        for (int i = 0; i < 1; i++) {
-            Person person = new Person();
-            person.setUserName("aaaa");
-            person.setPassword("aaaaerererere");
-            person.setAge(20);
-            person.setBirthday(new Date());
-            person.setNickName("John simith" + i);
-            person.setPhone("151255455252" + (i * 2));
-            person.setEmail("151255455252@qq.com");
-            person.setIdCardNo1("5515125545525");
-            AddressVO addressVO = new AddressVO();
-
-            addressVO.setProvince("湖南省");
-            addressVO.setCity("长沙市");
-            addressVO.setDistrict("望城区xxxx" + i + "号");
-            addressVO.setDetail("xxxx团结路幸福街" + i + "号");
-            person.setAddress(addressVO);
-            List<AddressVO> addressVOS = new ArrayList<>();
-            addressVOS.add(addressVO);
-            addressVOS.add(addressVO);
-            addressVOS.add(addressVO);
-            addressVOS.add(addressVO);
-            addressVOS.add(addressVO);
-            person.setAddresses(addressVOS);
-            person.setEmergencyLinkMan("赵市明");
-            person.setRoles1(list);
-            person.setTarget(map);
-            temp.add(person);
+        List<PersonB> list = new ArrayList<>();
+        for (int i = 0; i < 1000000; i++) {
+            List<String> temp = new ArrayList<>();
+            temp.add("item->" + i);
+            temp.add("item->" + (i * 2));
+            temp.add("item->" + (i * 4));
+            list.add(new PersonB("username" + i, "adfadfwef" + i, new PersonC("personC" + i, "pawword" + i), new PersonC(), temp));
         }
-        final StopWatch stopWatch1 = StopWatch.create();
-        final List<Person1> collect = temp.stream().map(person -> {
-//            final long curent = System.currentTimeMillis();
-            Person1 person1 = new Person1();
-            BeanUtils.copyProperties(person, person1);
-//            System.out.println("person1 read cost time is "+  (System.currentTimeMillis() - curent)+ "ms");
-            return person1;
+        long l = System.currentTimeMillis();
+        List<PersonD> collect = list.stream().map(personB -> {
+            PersonD temp = new PersonD();
+//            org.springframework.beans.BeanUtils.copyProperties(personB, temp);
+//            BeanUtils1.copy(personB, temp);
+//            Copy.copyValue(personB, temp);
+            BeanUtils.copyProperties(personB, temp);
+            return temp;
         }).collect(Collectors.toList());
-
-//        try {
-//            BeanUtils.getMethod(person);
-//        } catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
-//            e.printStackTrace();
+        System.out.println("执行用例-->" + collect.size() + "，耗时:" + (System.currentTimeMillis() - l) + "ms");
+        for (int i = 0; i < 10; i++) {
+            System.out.println("result is " + collect.get(i).toString());
+        }
+    }
+    @Test
+    public void test4() {
+        List<PersonB> list = new ArrayList<>();
+//        for (int i = 0; i < 1000000; i++) {
+//            List<String> temp = new ArrayList<>();
+//            temp.add("item->" + i);
+//            temp.add("item->" + (i * 2));
+//            temp.add("item->" + (i * 4));
+//            list.add(new PersonB("username" + i, "adfadfwef" + i, new PersonC("personC" + i, "pawword" + i), new PersonC(), temp));
 //        }
-        stopWatch1.stop();
-        System.out.println("total cost time is " + stopWatch1.getTotalTimeMillis() + "ms");
+//        long l = System.currentTimeMillis();
+//        List<PersonD> collect = list.stream().map(personB -> {
+//            PersonD temp = new PersonD();
+////            org.springframework.beans.BeanUtils.copyProperties(personB, temp);
+////            BeanUtils1.copy(personB, temp);
+////            Copy.copyValue(personB, temp);
+//            Copy.copyProperties1(personB, temp);
+//            return temp;
+//        }).collect(Collectors.toList());
 
-        System.out.println("person1 is " + collect.size());
-        for (int i = 0; i < 1; i++) {
-            final Person1 person1 = collect.get(i);
-            System.out.println("person1 is " + person1);
-            person1.getTarget().forEach((k, v) -> {
-                System.out.println("k:" + k + ",v:" + v);
-            });
-            System.out.println("person1 is " + person1.getRoles1());
+//        System.out.println("执行用例-->" + collect.size() + "，耗时:" + (System.currentTimeMillis() - l) + "ms");
+        List<String> temp = new ArrayList<>();
+        temp.add("item->" + 0);
+        temp.add("item->" + 222);
+        temp.add("item->" + 5555);
+        Set<Object> result = new HashSet<>();
+
+        final BeanCopier beanCopier = BeanCopier.create(temp.getClass(), result.getClass(), true);
+        beanCopier.copy(temp, result, new Converter() {
+            @Override
+            public Object convert(Object o, Class aClass, Object o1) {
+                System.out.println("o:" + o + ",class:" + aClass+", o1:"+o1);
+                return null;
+            }
+        });
+        System.out.println("执行结果；"+ result.size());
+        for (Object o : result) {
+            System.out.println("result is " + o.toString());
         }
 
     }
 
     @Test
-    public void test4() {
-        AddressVO addressVO = new AddressVO();
-        addressVO.setProvince("湖南省");
-        addressVO.setCity("长沙市");
-        addressVO.setDistrict("望城区xxxx" + 1 + "号");
-        addressVO.setDetail("xxxx团结路幸福街" + 1 + "号");
-        final Optional<AddressVO> clone = BeanUtils.clone(addressVO);
+    public void testBeanMap() throws Exception {
+        BeanGenerator generator = new BeanGenerator();
+        generator.addProperty("username", String.class);
+        generator.addProperty("password", String.class);
+        Object bean = generator.create();
+        Method setUserName = bean.getClass().getMethod("setUsername", String.class);
+        Method setPassword = bean.getClass().getMethod("setPassword", String.class);
+        setUserName.invoke(bean, "admin");
+        setPassword.invoke(bean, "password");
+        BeanMap map = BeanMap.create(bean);
 
-        System.out.println("result is " + clone.orElse(null));
+        System.out.println("admin equal:" + map.get("username"));
+        System.out.println("password equal:" + map.get("password"));
     }
 
+    @Test
+    public void testG() throws IntrospectionException {
+        BeanInfo beanInfo = Introspector.getBeanInfo(PersonD.class);
+        PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+            if (Objects.equals(propertyDescriptor.getName(), "roles")) {
+                System.out.println("class-->" + propertyDescriptor.getPropertyType());
+                Type clazz = propertyDescriptor.getWriteMethod().getGenericParameterTypes()[0];
+//                Class<?> parameterType = propertyDescriptor.getWriteMethod().getParameterTypes()[0];
+//
+//                Type clazz = parameterType.getGenericSuperclass();
+                ParameterizedType pt = (ParameterizedType) clazz;
+                String s = pt.getActualTypeArguments()[0].toString();
+                System.out.println("actualParamType is " + s);
+
+            }
+        }
+        String str = "setUserName";
+        System.out.println("str substring is " + str.substring(2));
+        System.out.println("str substring is " + str.substring(3));
+//        Field[] declaredFields = PersonD.class.getDeclaredFields();
+//        for (Field declaredField : declaredFields) {
+//            if(Objects.equals(declaredField.getName(), "roles")) {
+//                declaredField.get
+//                Type clazz = declaredField.getType().getGenericSuperclass();
+//                ParameterizedType pt = (ParameterizedType)clazz;
+//                String s = pt.getActualTypeArguments()[0].toString();
+//                System.out.println("actualParamType is " + s);
+//
+//            }
+//        }
+    }
 }

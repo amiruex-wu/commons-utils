@@ -1,6 +1,6 @@
 package org.wch.commons.lang;
 
-import com.sun.xml.internal.ws.encoding.soap.SerializationException;
+//import com.sun.xml.internal.ws.encoding.soap.SerializationException;
 
 import java.io.*;
 
@@ -28,7 +28,7 @@ public class SerializationUtils {
                 out = new ObjectOutputStream(outputStream);
                 out.writeObject(obj);
             } catch (IOException var11) {
-                throw new SerializationException(var11);
+                throw new RuntimeException(var11);
             } finally {
                 try {
                     if (out != null) {
@@ -60,7 +60,7 @@ public class SerializationUtils {
                 in = new ObjectInputStream(inputStream);
                 var2 = in.readObject();
             } catch (ClassNotFoundException | IOException var12) {
-                throw new SerializationException(var12);
+                throw new RuntimeException(var12);
             } finally {
                 try {
                     if (in != null) {

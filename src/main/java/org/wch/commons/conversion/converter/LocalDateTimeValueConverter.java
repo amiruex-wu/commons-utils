@@ -6,6 +6,7 @@ import org.wch.commons.lang.DateUtils;
 import org.wch.commons.lang.ObjectUtils;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -32,7 +33,7 @@ public class LocalDateTimeValueConverter<T> extends AbstractConverter<T> {
         Optional<T> result;
         switch (requiredType.getSimpleName()) {
             case "String":
-                result = Optional.of(requiredType.cast(DateUtils.format((LocalDateTime) obj, FormatPattern.FULL_DATE_FORMAT_1)));
+                result = DateUtils.format((LocalDateTime) obj, FormatPattern.FULL_DATE_FORMAT_1).map(requiredType::cast);
                 break;
             case "LocalDateTime":
                 result = Optional.of(requiredType.cast(obj));

@@ -1,28 +1,37 @@
 package org.wch.commons.conversion.converter;
 
-import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.wch.commons.lang.ObjectUtils;
+import org.wch.commons.beans.FieldPropertyDescriptor;
+import org.wch.commons.constant.CommonConstant;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class AbstractConverter<T> {
 
+    protected final List<Class<?>> basicClass = Arrays.stream(CommonConstant.BASIC_NUM_STR_CLAZZ).collect(Collectors.toList());
+
+    protected static Map<Class<?>, FieldPropertyDescriptor[]> classFieldPD = new ConcurrentHashMap<>(64);
+
     protected Object source;
 
     protected Class<T> requiredType;
 
     abstract public Optional<T> convert();
-
+/*
+    // todo 待优化，使用cglib技术
     protected static <T> Optional<T> castToRequiredType(Class<?> sourceClazz, Class<T> requiredType, String parseFunction, Object value) {
         try {
+            System.out.println("转换函数：。。。。");
             if (value instanceof String || value instanceof Character) {
                 return getValueOfMethod(requiredType, requiredType, parseFunction, value);
             } else {
@@ -65,5 +74,5 @@ public abstract class AbstractConverter<T> {
 //            e.printStackTrace();
             return Optional.empty();
         }
-    }
+    }*/
 }

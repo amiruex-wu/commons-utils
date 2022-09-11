@@ -28,7 +28,7 @@ public class ConvertFactory {
             } else if (source instanceof String) {
                 return Optional.of(new StringValueConverter<>(source, requiredType));
             } else if (source instanceof Date) {
-                return Optional.of(new DateValueConverter<T>(source, requiredType));
+                return Optional.of(new DateValueConverter<>(source, requiredType));
             } else if (source instanceof LocalDateTime) {
                 return Optional.of(new LocalDateTimeValueConverter<>(source, requiredType));
             } else if (source instanceof LocalDate) {
@@ -39,7 +39,7 @@ public class ConvertFactory {
                 return Optional.of(new NumberValueConverter<>(source, requiredType));
             } else if (source instanceof Collection) {
                 return Optional.of(new CollectionValueConverter<>(source, requiredType));
-            }  else if (source instanceof Map) {
+            } else if (source instanceof Map) {
                 return Optional.of(new MapValueConverter<>(source, requiredType));
             } else {
                 return Optional.of(new ObjectValueConverter<>(source, requiredType));
