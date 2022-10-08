@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 @RunWith(JUnit4.class)
-public class ZipUtilsTest {
+public class ZipUtils2Test {
 //    private Logger logger = LoggerFactory.getLogger(ZipUtilsTest.class);
 
     @Test

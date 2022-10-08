@@ -969,7 +969,7 @@ public class StringUtils {
 
     /**
      * <p>判断字符是否匹配正则表达式</p>
-     *
+     * <p>
      * The following types are supported:
      * <ul>
      *  <li>String (@String)</li>
@@ -989,5 +989,15 @@ public class StringUtils {
         Pattern pat = Pattern.compile(regex);
         Matcher mat = pat.matcher(source);
         return mat.find();
+    }
+
+    public static Optional<String> appendIfMissing(String source, String suffix) {
+        if (Objects.isNull(source)) {
+            return Optional.empty();
+        }
+        if (source.endsWith(suffix)) {
+            return Optional.of(source);
+        }
+        return Optional.of(source + suffix);
     }
 }
