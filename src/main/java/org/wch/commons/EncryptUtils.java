@@ -606,20 +606,20 @@ public class EncryptUtils {
         SecureRandom random = new SecureRandom();
         // 声明盐数组变量
         byte[] salt = new byte[saltLength];
-        //将随机数放入盐变量中
+        // 将随机数放入盐变量中
         random.nextBytes(salt);
-        //将盐数据传入消息摘要对象
+        // 将盐数据传入消息摘要对象
         messageDigest.get().update(salt);
         messageDigest.get().update(source.getBytes(StandardCharsets.UTF_8));
         // 转换并返回结果，也是字节数组，包含16个元素
         byte[] digest = messageDigest.get().digest();
 
         // 声明加密后的口令数组变量
-        //因为要在口令的字节数组中存放盐，所以加上盐的字节长度
+        // 因为要在口令的字节数组中存放盐，所以加上盐的字节长度
         byte[] pwd = new byte[digest.length + saltLength];
-        //将盐的字节拷贝到生成的加密口令字节数组的前12个字节，以便在验证口令时取出盐
+        // 将盐的字节拷贝到生成的加密口令字节数组的前12个字节，以便在验证口令时取出盐
         System.arraycopy(salt, 0, pwd, 0, saltLength);
-        //将消息摘要拷贝到加密口令字节数组从第13个字节开始的字节
+        // 将消息摘要拷贝到加密口令字节数组从第13个字节开始的字节
         System.arraycopy(digest, 0, pwd, saltLength, digest.length);
 
         // 字符数组转换成字符串返回
