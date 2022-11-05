@@ -4,6 +4,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.wch.commons.BeanUtils;
 import org.wch.commons.beans.FieldPropertyDescriptor;
+import org.wch.commons.constant.CommonConstant;
 import org.wch.commons.conversion.SimpleTypeConverter;
 import org.wch.commons.lang.ObjectUtils;
 
@@ -63,8 +64,8 @@ public class ObjectValueConverter<T> extends AbstractConverter<T> {
                     continue;
                 }
                 if (Objects.equals(sourceFieldPD.getType(), targetFieldPD.getType())
-                        && (BeanUtils.GENERAL_CLASS.contains(targetFieldPD.getType())
-                        || BeanUtils.DATE_TIME_CLASS.contains(targetFieldPD.getType()))) {
+                        && (CommonConstant.GENERAL_CLASS.contains(targetFieldPD.getType())
+                        || CommonConstant.DATE_TIME_CLASS.contains(targetFieldPD.getType()))) {
                     writerMethod.invoke(target, invoke);
                 } else if (Objects.equals(sourceFieldPD.getType(), targetFieldPD.getType())
                         && Map.class.isAssignableFrom(targetFieldPD.getType())) {
@@ -79,10 +80,10 @@ public class ObjectValueConverter<T> extends AbstractConverter<T> {
                     // 同为集合对象
                     final Object object = getObjectByRequireType(invoke, sourceFieldPD, targetFieldPD);
                     writerMethod.invoke(target, object);
-                } else if ((BeanUtils.GENERAL_CLASS.contains(targetFieldPD.getType()) && BeanUtils.GENERAL_CLASS.contains(sourceFieldPD.getType()))
-                        || (BeanUtils.GENERAL_CLASS.contains(targetFieldPD.getType()) && BeanUtils.DATE_TIME_CLASS.contains(sourceFieldPD.getType()))
-                        || (BeanUtils.DATE_TIME_CLASS.contains(targetFieldPD.getType()) && BeanUtils.DATE_TIME_CLASS.contains(sourceFieldPD.getType()))
-                        || (BeanUtils.DATE_TIME_CLASS.contains(targetFieldPD.getType()) && BeanUtils.GENERAL_CLASS.contains(sourceFieldPD.getType()))) {
+                } else if ((CommonConstant.GENERAL_CLASS.contains(targetFieldPD.getType()) && CommonConstant.GENERAL_CLASS.contains(sourceFieldPD.getType()))
+                        || (CommonConstant.GENERAL_CLASS.contains(targetFieldPD.getType()) && CommonConstant.DATE_TIME_CLASS.contains(sourceFieldPD.getType()))
+                        || (CommonConstant.DATE_TIME_CLASS.contains(targetFieldPD.getType()) && CommonConstant.DATE_TIME_CLASS.contains(sourceFieldPD.getType()))
+                        || (CommonConstant.DATE_TIME_CLASS.contains(targetFieldPD.getType()) && CommonConstant.GENERAL_CLASS.contains(sourceFieldPD.getType()))) {
                     // all of those are general class
                     final Optional<?> result1 = SimpleTypeConverter.convertIfNecessary(invoke, targetFieldPD.getType());
                     if (result1.isPresent()) {

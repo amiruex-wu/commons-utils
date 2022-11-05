@@ -15,13 +15,12 @@ import java.util.*;
  */
 public class CommonConstant {
 
+    // BASIC_
     public static final List<Class<?>> GENERAL_CLASS = Arrays.asList(
             byte.class, short.class, int.class, float.class, double.class, long.class, boolean.class, char.class,
             Byte.class, Short.class, Integer.class, Float.class, Double.class, Long.class, Boolean.class, BigDecimal.class, BigInteger.class,
             Character.class, String.class);
 
-
-    public final static Class<?>[] BASIC_DATE_TIME_CLAZZ = {LocalDateTime.class, LocalDate.class, Date.class, Calendar.class, LocalTime.class};
-
+    public static final List<Class<?>> DATE_TIME_CLASS = Arrays.asList(LocalDateTime.class, LocalDate.class, LocalTime.class, Date.class);
 
 }
