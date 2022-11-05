@@ -186,6 +186,13 @@ public class NumberUtils {
         }
     }
 
+    public static int toIntIfNull(final Integer integer) {
+        if (ObjectUtils.isNull(integer)) {
+            return 0;
+        }
+        return integer;
+    }
+
     /**
      * <p>Convert a {@code String} to a {@code long}, returning
      * {@code zero} if the conversion fails.</p>
