@@ -45,9 +45,9 @@ public class CustomConverter implements Converter {
         if (Objects.isNull(value)) {
             return null;
         }
-       /* System.out.println("source data is:" + value);
+        System.out.println("source data is:" + value);
         System.out.println("target param type is:" + targetClass);
-        System.out.println("target param setter is:" + var3 + ", type is " + var3.getClass());*/
+        System.out.println("target param setter is:" + var3 + ", type is " + var3.getClass());
         if (ObjectUtils.isNull(currentClasses.get())) {
             return null;
         } else {
@@ -94,8 +94,6 @@ public class CustomConverter implements Converter {
             FieldPropertyDescriptor[] var2 = new FieldPropertyDescriptor[length];
             for (int i = 0; i < length; i++) {
                 var2[i] = new FieldPropertyDescriptor(var1[i]);
-               /* if (!Objects.equals("class", var1[i].getName())) {
-                }*/
             }
             BeanUtils.classFieldPD.put(clazz, var2);
             return Optional.of(var2);
@@ -106,9 +104,6 @@ public class CustomConverter implements Converter {
     }
 
     private Optional<FieldPropertyDescriptor> getPropertyDescriptor(Class<?> clazz, String propertyName) {
-        /*if (Objects.equals(clazz, Class.class)) {
-            return Optional.empty();
-        }*/
         if (BeanUtils.classFieldPD.containsKey(clazz)) {
             final Optional<FieldPropertyDescriptor> first = Stream.of(BeanUtils.classFieldPD.get(clazz))
                     .filter(item -> ObjectUtils.nonNull(item) && Objects.equals(item.getName(), propertyName))

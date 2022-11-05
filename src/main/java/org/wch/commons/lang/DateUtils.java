@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class DateUtils {
 
-    private final static String[][] BEI_JING_LOCAL_DATE_PATTERN = {
+    private final static String[][] BEIJING_LOCAL_DATE_PATTERN = {
             {"yyyy-MM-dd", "\\d{4}-\\d{2}-\\d{2}",},
             {"yyyy-MM", "\\d{4}-\\d{2}",},
             {"yy-MM-dd", "\\d{2}-\\d{2}-\\d{2}",},
@@ -33,7 +33,7 @@ public class DateUtils {
             {"MM/yyyy", "\\d{2}/\\d{4}",},
     };
 
-    private final static String[][] BEI_JING_LOCAL_DATE_TIME_PATTERN = {
+    private final static String[][] BEIJING_LOCAL_DATE_TIME_PATTERN = {
             {"yyyy-MM-dd'T'hh:mm:ss.SSS'Z'", "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[.]\\d{3}Z",},
             {"yyyy-MM-dd'T'hh:mm:ss.SSS", "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[.]\\d{3}",},
             {"yyyy-MM-dd'T'hh:mm:ss", "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}",},
@@ -284,7 +284,7 @@ public class DateUtils {
         if (Objects.isNull(timeStamp)) {
             return Optional.empty();
         }
-        LocalDateTime localDateTime = new Date(timeStamp).toInstant()
+        LocalDateTime localDateTime = Instant.ofEpochMilli(timeStamp)
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
         return Optional.of(localDateTime);
@@ -318,7 +318,7 @@ public class DateUtils {
         if (Objects.isNull(timeStamp)) {
             return Optional.empty();
         }
-        LocalDate localDate = new Date(timeStamp).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate localDate = Instant.ofEpochMilli(timeStamp).atZone(ZoneId.systemDefault()).toLocalDate();
         return Optional.of(localDate);
     }
 
@@ -616,19 +616,17 @@ public class DateUtils {
         if (ObjectUtils.anyNull(date, formatPattern)) {
             return Optional.empty();
         }
-        Optional<LocalDateTime> localDateTime = toLocalDateTime(date);
-        if (localDateTime.isPresent()) {
-            return format(localDateTime.get(), formatPattern);
-        }
-        return Optional.empty();
+        return toLocalDateTime(date)
+                .map(item -> format(item, formatPattern))
+                .orElse(null);
     }
 
     public static Optional<String> format(LocalDate localDate, FormatPattern formatPattern) {
         if (ObjectUtils.anyNull(localDate, formatPattern)) {
             return Optional.empty();
         }
-        LocalDateTime temp = LocalDateTime.of(localDate, LocalTime.of(0, 0, 0, 0));
-        String format = temp.format(DateTimeFormatter.ofPattern(formatPattern.getName()));
+        String format = LocalDateTime.of(localDate, LocalTime.of(0, 0, 0, 0))
+                .format(DateTimeFormatter.ofPattern(formatPattern.getName()));
         return Optional.of(format);
     }
 
@@ -636,8 +634,8 @@ public class DateUtils {
         if (ObjectUtils.anyNull(localTime, formatPattern)) {
             return Optional.empty();
         }
-        LocalDateTime temp = LocalDateTime.of(LocalDate.now(), localTime);
-        String format = temp.format(DateTimeFormatter.ofPattern(formatPattern.getName()));
+        String format = LocalDateTime.of(LocalDate.now(), localTime)
+                .format(DateTimeFormatter.ofPattern(formatPattern.getName()));
         return Optional.of(format);
     }
 
@@ -729,9 +727,9 @@ public class DateUtils {
         AtomicReference<Optional<LocalDateTime>> result = new AtomicReference<>(Optional.empty());
         if (trim.length() <= 10) {
             int startIndex = trim.contains("/") ? 5 : 0;
-            for (int i = startIndex; i < BEI_JING_LOCAL_DATE_PATTERN.length; i++) {
-                if (trim.matches(BEI_JING_LOCAL_DATE_PATTERN[i][1])) {
-                    result.set(parseLocalDateToLocalDateTime(trim, BEI_JING_LOCAL_DATE_PATTERN[i][0]));
+            for (int i = startIndex; i < BEIJING_LOCAL_DATE_PATTERN.length; i++) {
+                if (trim.matches(BEIJING_LOCAL_DATE_PATTERN[i][1])) {
+                    result.set(parseLocalDateToLocalDateTime(trim, BEIJING_LOCAL_DATE_PATTERN[i][0]));
                     if (result.get().isPresent()) {
                         break;
                     }
@@ -745,9 +743,9 @@ public class DateUtils {
                     .replaceAll("p", "")
                     .replaceAll("P", "");
             int startIndex = replaceAll.contains("/") ? 8 : 0;
-            for (int i = startIndex; i < BEI_JING_LOCAL_DATE_TIME_PATTERN.length; i++) {
-                if (replaceAll.matches(BEI_JING_LOCAL_DATE_TIME_PATTERN[i][1])) {
-                    Optional<LocalDateTime> parse = parse(replaceAll, BEI_JING_LOCAL_DATE_TIME_PATTERN[i][0]);
+            for (int i = startIndex; i < BEIJING_LOCAL_DATE_TIME_PATTERN.length; i++) {
+                if (replaceAll.matches(BEIJING_LOCAL_DATE_TIME_PATTERN[i][1])) {
+                    Optional<LocalDateTime> parse = parse(replaceAll, BEIJING_LOCAL_DATE_TIME_PATTERN[i][0]);
                     parse.ifPresent(localDateTime -> {
                         if (isPM && localDateTime.getHour() < 12) {
                             result.set(Optional.of(localDateTime.plusHours(12)));

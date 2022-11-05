@@ -3,13 +3,12 @@ package org.wch.commons.conversion;
 import org.wch.commons.conversion.converter.*;
 import org.wch.commons.lang.ObjectUtils;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @Description: 类型转换器工厂
@@ -18,32 +17,49 @@ import java.util.Optional;
  */
 public class ConvertFactory {
 
+    private static final Map<Class, AbstractConverter> converterMap = new HashMap<>();
+
+    static {
+        converterMap.put(Character.class, new CharacterValueConverter<>());
+        converterMap.put(String.class, new StringValueConverter<>());
+        converterMap.put(Date.class, new DateValueConverter<>());
+        converterMap.put(LocalDateTime.class, new LocalDateTimeValueConverter<>());
+        converterMap.put(LocalDate.class, new LocalDateValueConverter<>());
+        converterMap.put(LocalTime.class, new LocalTimeValueConverter<>());
+        converterMap.put(Byte.class, new NumberValueConverter<>());
+        converterMap.put(Short.class, new NumberValueConverter<>());
+        converterMap.put(Integer.class, new NumberValueConverter<>());
+        converterMap.put(Long.class, new NumberValueConverter<>());
+        converterMap.put(Float.class, new NumberValueConverter<>());
+        converterMap.put(Double.class, new NumberValueConverter<>());
+        converterMap.put(BigInteger.class, new NumberValueConverter<>());
+        converterMap.put(BigDecimal.class, new NumberValueConverter<>());
+        converterMap.put(Number.class, new NumberValueConverter<>());
+        converterMap.put(Collection.class, new CollectionValueConverter<>());
+        converterMap.put(Map.class, new MapValueConverter<>());
+        converterMap.put(Object.class, new ObjectValueConverter<>());
+    }
+
     public static <T> Optional<AbstractConverter<T>> getConverter(Object source, Class<T> requiredType) {
         if (ObjectUtils.anyNull(source, requiredType)) {
             return Optional.empty();
         }
         try {
-            if (source instanceof Character) {
-                return Optional.of(new CharacterValueConverter<>(source, requiredType));
-            } else if (source instanceof String) {
-                return Optional.of(new StringValueConverter<>(source, requiredType));
-            } else if (source instanceof Date) {
-                return Optional.of(new DateValueConverter<>(source, requiredType));
-            } else if (source instanceof LocalDateTime) {
-                return Optional.of(new LocalDateTimeValueConverter<>(source, requiredType));
-            } else if (source instanceof LocalDate) {
-                return Optional.of(new LocalDateValueConverter<>(source, requiredType));
-            } else if (source instanceof LocalTime) {
-                return Optional.of(new LocalTimeValueConverter<>(source, requiredType));
-            } else if (source instanceof Number) {
-                return Optional.of(new NumberValueConverter<>(source, requiredType));
-            } else if (source instanceof Collection) {
-                return Optional.of(new CollectionValueConverter<>(source, requiredType));
-            } else if (source instanceof Map) {
-                return Optional.of(new MapValueConverter<>(source, requiredType));
-            } else {
-                return Optional.of(new ObjectValueConverter<>(source, requiredType));
+            AbstractConverter<T> converter = converterMap.get(source.getClass());
+            if (Objects.isNull(converter)) {
+                if (source instanceof Number) {
+                    converter = converterMap.get(Number.class);
+                } else if (source instanceof Collection) {
+                    converter = converterMap.get(Collection.class);
+                } else if (source instanceof Map) {
+                    converter = converterMap.get(Map.class);
+                } else {
+                    converter = converterMap.get(Object.class);
+                }
             }
+            converter.setSource(source);
+            converter.setRequiredType(requiredType);
+            return Optional.of(converter);
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();

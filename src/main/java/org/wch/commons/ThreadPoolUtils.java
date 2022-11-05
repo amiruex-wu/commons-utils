@@ -23,7 +23,8 @@ public class ThreadPoolUtils {
     public static ExecutorService createService(int corePoolSize, int maxMumPoolSize) {
         ExecutorService executor = new ThreadPoolExecutor(corePoolSize,
                 maxMumPoolSize,
-                60L, TimeUnit.SECONDS,
+                60L,
+                TimeUnit.SECONDS,
                 new ArrayBlockingQueue<>(10));
         return executor;
     }

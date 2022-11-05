@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Author: wuchu
  * @CreateTime: 2022-09-07 11:13
  */
+@Deprecated
 public class BeanUtils {
 
     private final static Map<String, BeanCopier> copierMap = new ConcurrentHashMap<>();

@@ -8,6 +8,7 @@ import lombok.Setter;
  * @Author: wuchu
  * @CreateTime: 2022-07-13 17:22
  */
+@Deprecated
 public class ServiceException extends RuntimeException {
 
     @Getter

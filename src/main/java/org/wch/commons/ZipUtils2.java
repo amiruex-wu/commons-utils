@@ -26,6 +26,7 @@ import java.util.zip.ZipOutputStream;
  * @Author: wuchu
  * @CreateTime: 2022-07-13 17:22
  */
+@Deprecated
 public class ZipUtils2 {
 
     private static final int BUFFER_SIZE = 2 * 1024;
