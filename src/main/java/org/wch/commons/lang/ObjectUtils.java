@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * @Description: TODO
+ * @Description: 普通对象类型工具类
  * @Author: wuchu
  * @CreateTime: 2022-07-06 10:33
  */

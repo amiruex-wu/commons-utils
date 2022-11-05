@@ -6,11 +6,15 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.NoArgsConstructor;
 import org.wch.commons.lang.ObjectUtils;
 
-import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+/**
+ * @Description: 键值对类型转换器
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
+ */
 @NoArgsConstructor
 public class MapValueConverter<T> extends AbstractConverter<T> {
 
@@ -28,13 +32,25 @@ public class MapValueConverter<T> extends AbstractConverter<T> {
             return Optional.empty();
         }
         Optional<T> result;
-        final String jsonString = JSON.toJSONString(obj);
         if ("String".equals(requiredType.getSimpleName())) {
-            result = Optional.of(requiredType.cast(jsonString));
+            Map<Object, Object> map = (Map<Object, Object>) obj;
+            StringBuffer stringBuffer = new StringBuffer();
+            stringBuffer.append("{");
+            for (Map.Entry<Object, Object> entry : map.entrySet()) {
+                stringBuffer.append("\"")
+                        .append(entry.getKey().toString())
+                        .append("\":\"")
+                        .append(Objects.nonNull(entry.getValue()) ? ("\"" + entry.getValue().toString() + "\"") : null)
+                        .append(",");
+            }
+            stringBuffer.append("}");
+            result = Optional.of(requiredType.cast(stringBuffer.toString()));
         } else if ("Map".equals(requiredType.getSimpleName())) {
             return Optional.of((T) obj);
         } else {
+            System.out.println("MapConvert执行过程....");
             try {
+                final String jsonString = JSON.toJSONString(obj);
                 final T t = JSONObject.parseObject(jsonString, requiredType);
                 result = Optional.ofNullable(t);
             } catch (JSONException e) {

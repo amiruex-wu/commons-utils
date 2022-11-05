@@ -6,8 +6,14 @@ import org.wch.commons.lang.DateUtils;
 import org.wch.commons.lang.ObjectUtils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
+/**
+ * @Description: 日期类型转换器
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
+ */
 @NoArgsConstructor
 public class LocalDateValueConverter<T> extends AbstractConverter<T> {
 
@@ -27,10 +33,10 @@ public class LocalDateValueConverter<T> extends AbstractConverter<T> {
         Optional<T> result;
         switch (requiredType.getSimpleName()) {
             case "String":
-                result = Optional.of(requiredType.cast(DateUtils.format((LocalDate) obj, FormatPattern.LOCAL_DATE_FORMAT_1)));
+                result = DateUtils.format((LocalDate) obj, FormatPattern.LOCAL_DATE_FORMAT_1).map(requiredType::cast);
                 break;
             case "LocalDateTime":
-                result = Optional.of(requiredType.cast(DateUtils.toLocalDateTime((LocalDate) obj)));
+                result = DateUtils.toLocalDateTime((LocalDate) obj).map(requiredType::cast);
                 break;
             case "LocalDate":
                 result = Optional.of(requiredType.cast(obj));

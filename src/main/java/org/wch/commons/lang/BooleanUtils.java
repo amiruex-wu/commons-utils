@@ -31,6 +31,12 @@ import java.util.Optional;
  * <p>#ThreadSafe#</p>
  *
  */
+
+/**
+ * @Description: TODO 布尔类型数据工具类
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
+ */
 public class BooleanUtils {
     /**
      * The false String {@code "false"}.

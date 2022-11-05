@@ -5,6 +5,7 @@ import org.wch.commons.lang.BooleanUtils;
 import org.wch.commons.lang.ObjectUtils;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Optional;
 
 @NoArgsConstructor
@@ -29,28 +30,31 @@ public class NumberValueConverter<T> extends AbstractConverter<T> {
                 result = Optional.of(requiredType.cast(obj.toString()));
                 break;
             case "Byte":
-                result = castToRequiredType(obj.getClass(), requiredType, "byteValue", obj);
+                result = Optional.of(requiredType.cast(Byte.valueOf(obj.toString())));
                 break;
             case "Short":
-                result = castToRequiredType(obj.getClass(), requiredType, "shortValue", obj);
+                result = Optional.of(requiredType.cast(Short.valueOf(obj.toString())));
                 break;
             case "Integer":
-                result = castToRequiredType(obj.getClass(), requiredType, "intValue", obj);
+                result = Optional.of(requiredType.cast(Integer.valueOf(obj.toString())));
                 break;
             case "Long":
-                result = castToRequiredType(obj.getClass(), requiredType, "longValue", obj);
+                result = Optional.of(requiredType.cast(Long.valueOf(obj.toString())));
                 break;
             case "Double":
-                result = castToRequiredType(obj.getClass(), requiredType, "doubleValue", obj);
+                result = Optional.of(requiredType.cast(Double.valueOf(obj.toString())));
                 break;
             case "Float":
-                result = castToRequiredType(obj.getClass(), requiredType, "floatValue", obj);
+                result = Optional.of(requiredType.cast(Float.valueOf(obj.toString())));
                 break;
             case "Boolean":
                 result = Optional.of(requiredType.cast(BooleanUtils.toBoolean(obj)));
                 break;
             case "BigDecimal":
                 result = Optional.of(requiredType.cast(new BigDecimal(obj.toString())));
+                break;
+            case "BigInteger":
+                result = Optional.of(requiredType.cast(new BigInteger(obj.toString())));
                 break;
             default:
                 // 其他数据类型不进行转换

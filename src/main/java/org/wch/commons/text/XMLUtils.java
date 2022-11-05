@@ -1,12 +1,12 @@
 package org.wch.commons.text;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.wch.commons.beans.XMLAttribute;
+import org.wch.commons.constant.CommonConstant;
 import org.wch.commons.enums.XMLOperateType;
 import org.wch.commons.lang.*;
 import org.xml.sax.SAXException;
@@ -15,7 +15,6 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.*;
@@ -28,11 +27,6 @@ import java.util.stream.Stream;
  */
 
 public class XMLUtils {
-
-    private final static Class<?>[] BASIC_CLAZZ = {Byte.class, Short.class, Integer.class, Float.class, Double.class,
-            Long.class, BigDecimal.class, String.class, Boolean.class, Character.class,
-            byte.class, short.class, int.class, float.class, double.class,
-            long.class, boolean.class, char.class,};
 
     /**
      * 读取xml并转换成java bean对象(性能问题)
@@ -230,10 +224,10 @@ public class XMLUtils {
         final Element root = document.addElement("root");
 
         System.out.println("");
-        final List<Class<?>> basicClazz = Arrays.asList(BASIC_CLAZZ);
+//        final List<Class<?>> basicClazz = Arrays.asList(CommonConstant.BASIC_NUM_STR_CLAZZ);
         for (Map.Entry<String, Object> entry : properties.entrySet()) {
             if (ObjectUtils.nonNull(entry.getValue())) {
-                buildEle(xmlOperateType, root, basicClazz, entry.getKey(), entry.getValue());
+                buildEle(xmlOperateType, root, CommonConstant.GENERAL_CLASS, entry.getKey(), entry.getValue());
             }
         }
         final String xmlString = formatXMLString(document);
@@ -242,24 +236,24 @@ public class XMLUtils {
         return Optional.of(xmlString);
     }
 
-    public static Optional<Element> buildElement1(Element root, Map<String, Object> properties, XMLOperateType xmlOperateType, boolean updateOnExists) {
+   /* public static Optional<Element> buildElement1(Element root, Map<String, Object> properties, XMLOperateType xmlOperateType, boolean updateOnExists) {
         if (ObjectUtils.isEmpty(properties)) {
             return Optional.empty();
         }
-        final List<Class<?>> basicClazz = Arrays.asList(BASIC_CLAZZ);
+//        final List<Class<?>> basicClazz = Arrays.asList(CommonConstant.BASIC_NUM_STR_CLAZZ);
         for (Map.Entry<String, Object> entry : properties.entrySet()) {
             final Element element = root.element(entry.getKey());
             if (ObjectUtils.isNull(element)) {
                 if (ObjectUtils.nonNull(entry.getValue())) {
-                    buildEle(xmlOperateType, root, basicClazz, entry.getKey(), entry.getValue());
+                    buildEle(xmlOperateType, root, CommonConstant.GENERAL_CLASS, entry.getKey(), entry.getValue());
                 }
             } else {
-                buildEle1(xmlOperateType, root, basicClazz, entry.getKey(), entry.getValue(), updateOnExists);
+                buildEle1(xmlOperateType, root, CommonConstant.GENERAL_CLASS, entry.getKey(), entry.getValue(), updateOnExists);
             }
         }
 //        final String xmlString = formatXMLString(document);
         return Optional.of(root);
-    }
+    }*/
 
     private static void buildEle(XMLOperateType xmlOperateType, Element root, List<Class<?>> basicClazz, String key, Object value) {
         if (basicClazz.contains(value.getClass())) {
@@ -585,9 +579,9 @@ public class XMLUtils {
                             field.set(t, bean);
                         }
                     }
-                } else if (Arrays.asList(BASIC_CLAZZ).contains(field.getType())) {
+                } else if (CommonConstant.GENERAL_CLASS.contains(field.getType())) {
                     String value = root.elementText(field.getName());
-                    Optional<?> optional = ConvertUtils2.convertIfNecessary(value, field.getType());
+                    Optional<?> optional = ConvertUtils.convertIfNecessary(value, field.getType());
                     if (optional.isPresent()) {
                         field.set(t, optional.get());
                     }
@@ -622,10 +616,10 @@ public class XMLUtils {
                             field.set(t, bean);
                         }
                     }
-                } else if (Arrays.asList(BASIC_CLAZZ).contains(field.getType())) {
+                } else if (CommonConstant.GENERAL_CLASS.contains(field.getType())) {
                     String attributeValue = root.attributeValue(field.getName());
                     if (ObjectUtils.nonNull(attributeValue)) {
-                        Optional<?> optional = ConvertUtils2.convertIfNecessary(attributeValue, field.getType());
+                        Optional<?> optional = ConvertUtils.convertIfNecessary(attributeValue, field.getType());
                         if (optional.isPresent()) {
                             field.set(t, optional.get());
                         }
@@ -648,7 +642,7 @@ public class XMLUtils {
         try {
             List<T> temp = new ArrayList<>();
             List<Element> elements = root.elements(fieldName);
-            if (Arrays.asList(BASIC_CLAZZ).contains(clazz)) {
+            if (CommonConstant.GENERAL_CLASS.contains(clazz)) {
                 for (Element element : elements) {
                     for (Element ele : element.elements()) {
                         String stringValue = ele.getStringValue();
@@ -671,7 +665,7 @@ public class XMLUtils {
         try {
             List<T> temp = new ArrayList<>();
             List<Element> elements = root.elements(fieldName);
-            if (Arrays.asList(BASIC_CLAZZ).contains(clazz)) {
+            if (CommonConstant.GENERAL_CLASS.contains(clazz)) {
                 elements.stream().flatMap(element ->
                         element.elements().stream()
                                 .map(ele -> {
@@ -729,16 +723,16 @@ public class XMLUtils {
     }
 
     private static void setElementProperties(Element root, XMLAttribute xmlAttribute) {
-        final List<Class<?>> classes = Arrays.asList(BASIC_CLAZZ);
+//        final List<Class<?>> classes = Arrays.asList(CommonConstant.BASIC_NUM_STR_CLAZZ);
         xmlAttribute.getProperties().forEach((k, v) -> {
             boolean present = root.elements().stream().anyMatch(e -> Objects.equals(e.getName(), k));
             if (!present) {
                 switch (xmlAttribute.getXmlOperateType()) {
                     case GENERAL:
-                        addElement(root, classes, k, v);
+                        addElement(root, CommonConstant.GENERAL_CLASS, k, v);
                         break;
                     case ATTRIBUTE:
-                        addAttribute(root, classes, k, v);
+                        addAttribute(root, CommonConstant.GENERAL_CLASS, k, v);
                         break;
                     default:
                         break;
@@ -748,10 +742,10 @@ public class XMLUtils {
                 if (BooleanUtils.isTrue(xmlAttribute.getUpdateOnExists())) {
                     switch (xmlAttribute.getXmlOperateType()) {
                         case GENERAL:
-                            updateElement(root, classes, k, v);
+                            updateElement(root, CommonConstant.GENERAL_CLASS, k, v);
                             break;
                         case ATTRIBUTE:
-                            updateAttribute(root, classes, k, v);
+                            updateAttribute(root, CommonConstant.GENERAL_CLASS, k, v);
                             break;
                         default:
                             break;
@@ -807,11 +801,11 @@ public class XMLUtils {
     }
 
     private static void updateElement(Element root, List<Class<?>> basicClasses, String label, Object value) {
-        final List<Class<?>> classes = Arrays.asList(BASIC_CLAZZ);
+//        final List<Class<?>> classes = Arrays.asList(CommonConstant.BASIC_NUM_STR_CLAZZ);
         if (value instanceof Collection) {
             Element element = root.element(label);
             if (Objects.isNull(element)) {
-                addElement(root, classes, label, value);
+                addElement(root, CommonConstant.GENERAL_CLASS, label, value);
             } else {
                 updateElementCollectionType(basicClasses, label, (Collection) value, element);
             }
@@ -820,7 +814,7 @@ public class XMLUtils {
             Element element = root.element(label);
             // 元素不存在的情况
             if (Objects.isNull(element)) {
-                addElement(root, classes, label, value);
+                addElement(root, CommonConstant.GENERAL_CLASS, label, value);
             } else {
                 // 元素存在的情况
                 for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -917,11 +911,11 @@ public class XMLUtils {
     }
 
     private static void updateAttribute(Element root, List<Class<?>> basicClasses, String label, Object value) {
-        final List<Class<?>> classes = Arrays.asList(BASIC_CLAZZ);
+//        final List<Class<?>> classes = Arrays.asList(CommonConstant.BASIC_NUM_STR_CLAZZ);
         if (value instanceof Collection) {
             Element element = root.element(label);
             if (Objects.isNull(element)) {
-                addElement(root, classes, label, value);
+                addElement(root, CommonConstant.GENERAL_CLASS, label, value);
             } else {
                 Collection collection = (Collection) value;
                 for (Object o : collection) {
@@ -941,7 +935,7 @@ public class XMLUtils {
 
             // 元素不存在的情况
             if (Objects.isNull(element)) {
-                addAttribute(root, classes, label, value);
+                addAttribute(root, CommonConstant.GENERAL_CLASS, label, value);
             } else {
                 // 元素存在的情况
                 for (Map.Entry<String, Object> entry : map.entrySet()) {

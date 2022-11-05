@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Description: TODO
+ * @Description: 线程池工具类
  * @Author: wuchu
  * @CreateTime: 2022-07-20 18:13
  */
@@ -23,7 +23,8 @@ public class ThreadPoolUtils {
     public static ExecutorService createService(int corePoolSize, int maxMumPoolSize) {
         ExecutorService executor = new ThreadPoolExecutor(corePoolSize,
                 maxMumPoolSize,
-                60L, TimeUnit.SECONDS,
+                60L,
+                TimeUnit.SECONDS,
                 new ArrayBlockingQueue<>(10));
         return executor;
     }

@@ -3,6 +3,11 @@ package org.wch.commons.lang;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+/**
+ * @Description: Base64工具类
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
+ */
 public class Base64Utils {
 
     public Base64Utils() {

@@ -7,7 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * @Description: TODO
+ * @Description: 集合类型工具类
  * @Author: wuchu
  * @CreateTime: 2022-07-22 15:24
  */

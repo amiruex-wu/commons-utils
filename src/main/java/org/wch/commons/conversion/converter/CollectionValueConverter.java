@@ -7,6 +7,11 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * @Description: 集合类型转换器
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
+ */
 @NoArgsConstructor
 public class CollectionValueConverter<T> extends AbstractConverter<T> {
 

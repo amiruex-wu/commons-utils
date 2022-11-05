@@ -1,6 +1,8 @@
 package org.wch.commons.io;
 
 
+import com.sun.org.slf4j.internal.Logger;
+import com.sun.org.slf4j.internal.LoggerFactory;
 import org.wch.commons.callableInterface.FileReaderCallable;
 import org.wch.commons.callableInterface.FileWriterCallable;
 import org.wch.commons.lang.ObjectUtils;
@@ -16,6 +18,8 @@ import java.util.Optional;
  * @CreateTime: 2022-07-07 14:11
  */
 public class FileUtils {
+    
+    private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
 
     private final String resourceRelativePath;
 
@@ -76,7 +80,7 @@ public class FileUtils {
             while (ObjectUtils.nonNull(line = bufferedReader.readLine())) {
                 stringBuffer.append(line).append(StringUtils.LF);
             }
-            System.out.println("文件读取完成...");
+            log.debug("文件读取完成...");
             return Optional.of(stringBuffer.toString());
         } catch (IOException e) {
             e.printStackTrace();
@@ -124,12 +128,13 @@ public class FileUtils {
         if (ObjectUtils.anyNull(inputStream, fileReaderCallable)) {
             return;
         }
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+        // todo
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream), 10240)) {
             String line;
             while (ObjectUtils.nonNull(line = bufferedReader.readLine())) {
                 fileReaderCallable.call(line);
             }
-            System.out.println("文件读取完成...");
+            log.debug("文件读取完成...");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -264,7 +269,7 @@ public class FileUtils {
         }
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(source));
              BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(target))) {
-            System.out.println("文件写入开始...");
+            log.debug("文件写入开始...");
             String line;
             while (ObjectUtils.nonNull(line = bufferedReader.readLine())) {
                 Object call = fileWriterCallable.call(line);
@@ -272,7 +277,7 @@ public class FileUtils {
                 bufferedWriter.newLine();
             }
             bufferedWriter.flush();
-            System.out.println("文件写入完成...");
+            log.debug("文件写入完成...");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -291,14 +296,14 @@ public class FileUtils {
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(source));
              FileOutputStream out = new FileOutputStream(targetPath);
              BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(out))) {
-            System.out.println("文件写入开始...");
+            log.debug("文件写入开始...");
             String line;
             while (ObjectUtils.nonNull(line = bufferedReader.readLine())) {
                 bufferedWriter.write(line);
                 bufferedWriter.newLine();
             }
             bufferedWriter.flush();
-            System.out.println("文件写入完成...");
+            log.debug("文件写入完成...");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -316,14 +321,14 @@ public class FileUtils {
         }
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(source));
              BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(target))) {
-            System.out.println("文件写入开始...");
+            log.debug("文件写入开始...");
             String line;
             while (ObjectUtils.nonNull(line = bufferedReader.readLine())) {
                 bufferedWriter.write(line);
                 bufferedWriter.newLine();
             }
             bufferedWriter.flush();
-            System.out.println("文件写入完成...");
+            log.debug("文件写入完成...");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -348,7 +353,7 @@ public class FileUtils {
             if (!mkdirs) {
                 throw new Exception("存放的目标路径：[" + targetFolder + "] 不存在...");
             } else {
-                System.out.println("存放的目标路径：[" + targetFolder + "] 已创建...");
+                log.debug("存放的目标路径：[" + targetFolder + "] 已创建...");
             }
         }
 

@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * @Description: TODO
+ * @Description: 数组工具类
  * @Author: wuchu
  * @CreateTime: 2022-07-06 14:07
  */

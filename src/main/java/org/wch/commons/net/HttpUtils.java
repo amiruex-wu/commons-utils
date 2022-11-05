@@ -17,6 +17,11 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @Description: 网络请求类工具类
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
+ */
 public class HttpUtils {
 
     //匹配10.0.0.0 - 10.255.255.255的网段

@@ -8,6 +8,11 @@ import org.wch.commons.lang.ObjectUtils;
 import java.util.Date;
 import java.util.Optional;
 
+/**
+ * @Description: 日期类型转换器
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
+ */
 @NoArgsConstructor
 public class DateValueConverter<T> extends AbstractConverter<T> {
 
@@ -27,13 +32,13 @@ public class DateValueConverter<T> extends AbstractConverter<T> {
         Optional<T> result;
         switch (requiredType.getSimpleName()) {
             case "String":
-                result = Optional.of(requiredType.cast(DateUtils.format((Date) obj, FormatPattern.FULL_DATE_FORMAT_1)));
+                result = DateUtils.format((Date) obj, FormatPattern.FULL_DATE_FORMAT_1).map(requiredType::cast);
                 break;
             case "LocalDateTime":
-                result = Optional.of(requiredType.cast(DateUtils.toLocalDateTime((Date) obj)));
+                result = DateUtils.toLocalDateTime((Date) obj).map(requiredType::cast);
                 break;
             case "LocalDate":
-                result = Optional.of(requiredType.cast(DateUtils.toLocalDate((Date) obj)));
+                result = DateUtils.toLocalDate((Date) obj).map(requiredType::cast);
                 break;
             case "LocalTime":
                 result = DateUtils.toLocalDateTime((Date) obj).map(dateTime -> requiredType.cast(dateTime.toLocalTime()));

@@ -1,16 +1,21 @@
 package org.wch.commons;
 
+import org.wch.commons.lang.NumberUtils;
 import org.wch.commons.lang.NumberUtils1;
 import org.wch.commons.lang.ObjectUtils;
 import org.wch.commons.lang.StringUtils;
-import org.wch.commons.text.TreeNode;
-import org.wch.commons.text.TreesData;
+import org.wch.commons.beans.TreeNode;
+import org.wch.commons.beans.TreesData;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-
+/**
+ * @Description: 树形构建工具类
+ * @Author: wuchu
+ * @CreateTime: 2022-07-13 17:22
+ */
 public class TreeUtils {
 
     /**
@@ -228,11 +233,11 @@ public class TreeUtils {
             if (ObjectUtils.nonNull(mapper)) {
                 treeNode.eval(treeNode, mapper);
             }
-            rowCount += NumberUtils1.toIntIfNull(treeNode.getDataNum());
+            rowCount += NumberUtils.toIntIfNull(treeNode.getDataNum());
             if (ObjectUtils.isNotEmpty(treeNode.getChildren())) {
                 int count = calculateNodeCountContainChild(treeNode.getChildren(), mapper);
                 treeNode.setIsLeaf(count <= 0);
-                treeNode.setDataNum(count + NumberUtils1.toIntIfNull(treeNode.getDataNum()));
+                treeNode.setDataNum(count + NumberUtils.toIntIfNull(treeNode.getDataNum()));
                 rowCount += count;
             }
         }
