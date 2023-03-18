@@ -38,7 +38,6 @@ public class ObjectValueConverter<T> extends AbstractConverter<T> {
         if (ObjectUtils.anyNull(source, requiredType) || Class.class.equals(requiredType)) {
             return Optional.empty();
         }
-//        System.out.println("ObjectConvert执行过程....");
 
         // 获得属性
         final Class<?> sourceClass = source.getClass();
@@ -186,7 +185,7 @@ public class ObjectValueConverter<T> extends AbstractConverter<T> {
         } else {
             result = new ArrayList<>();
         }
-        if (Objects.equals(sourceActualParamType, targetActualParamType) && BeanUtils.GENERAL_CLASS.contains(targetActualParamType)) {
+        if (Objects.equals(sourceActualParamType, targetActualParamType) && CommonConstant.GENERAL_CLASS.contains(targetActualParamType)) {
             result.addAll(source1);
         } else {
             source1.stream()
@@ -194,7 +193,7 @@ public class ObjectValueConverter<T> extends AbstractConverter<T> {
                     .map(o -> {
                         try {
                             Object targetTemp = targetActualParamType.newInstance();
-                            BeanUtils.copyProperties(o, targetTemp);
+                            BeanUtils.copyBean(o, targetActualParamType);
                             return targetTemp;
                         } catch (InstantiationException | IllegalAccessException e) {
                             e.printStackTrace();
