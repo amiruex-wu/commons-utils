@@ -3,7 +3,7 @@ package org.wch.commons.juel;
 import de.odysseus.el.ExpressionFactoryImpl;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.wch.commons.lang.CollectionUtils;
+import org.wch.commons.collections.CollectionUtils;
 import org.wch.commons.lang.ObjectUtils;
 import org.wch.commons.lang.StringUtils;
 
@@ -166,23 +166,4 @@ public class ExpressionManager {
         }
     }
 
-   /* public void test(){
-        long current = System.currentTimeMillis();
-        Gson gson = new Gson();
-        SimpleContext simpleContext = gson.fromJson(gson.toJson(context.get()), SimpleContext.class);
-        System.out.println("result is " + Objects.isNull(simpleContext) +"，耗时：" + (System.currentTimeMillis() - current)+"ms");
-
-        long current1 = System.currentTimeMillis();
-        byte[] serialize = SerializationUtils.serialize(context.get());
-        SimpleContext simpleContext1 = (SimpleContext) SerializationUtils.deserialize(serialize);
-        System.out.println("result is " + Objects.isNull(simpleContext1) +"，耗时：" + (System.currentTimeMillis() - current1)+"ms");
-
-     long current2 = System.currentTimeMillis();
-        Object o = context.get().deepClone();
-
-        SimpleContext simpleContext2 = (SimpleContext) o;
-        System.out.println("result is " + Objects.isNull(simpleContext2) +"，耗时：" + (System.currentTimeMillis() - current2)+"ms");
-
-
-    }*/
 }

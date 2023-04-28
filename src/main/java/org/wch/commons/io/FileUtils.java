@@ -3,6 +3,7 @@ package org.wch.commons.io;
 
 import com.sun.org.slf4j.internal.Logger;
 import com.sun.org.slf4j.internal.LoggerFactory;
+import lombok.SneakyThrows;
 import org.wch.commons.callableInterface.FileReaderCallable;
 import org.wch.commons.callableInterface.FileWriterCallable;
 import org.wch.commons.lang.ObjectUtils;
@@ -10,7 +11,11 @@ import org.wch.commons.lang.StringUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * @Description: TODO
@@ -18,7 +23,7 @@ import java.util.Optional;
  * @CreateTime: 2022-07-07 14:11
  */
 public class FileUtils {
-    
+
     private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
 
     private final String resourceRelativePath;
@@ -283,12 +288,60 @@ public class FileUtils {
         }
     }
 
+    public static void copyFolder(String sourceFolder, String destinationFolder) {
+        Path sourcePath = Paths.get(sourceFolder);
+        Path destinationPath = Paths.get(destinationFolder);
+        copyFolder(sourcePath, destinationPath);
+    }
+
     /**
-     * 拷贝文件
+     * 复制源文件夹到目标文件夹
      *
-     * @param source
-     * @param targetPath
+     * @param sourcePath
+     * @param destinationPath
      */
+    public static void copyFolder(Path sourcePath, Path destinationPath) {
+        try {
+            Files.walkFileTree(sourcePath, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    Path targetPath = destinationPath.resolve(sourcePath.relativize(dir));
+                    Files.copy(dir, targetPath, StandardCopyOption.COPY_ATTRIBUTES);
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Path targetPath = destinationPath.resolve(sourcePath.relativize(file));
+                    Files.copy(file, targetPath, StandardCopyOption.COPY_ATTRIBUTES);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+            System.out.println("Folder copied successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 删除文件夹及其子文件
+     *
+     * @param file
+     */
+    public static void deleteFolder(File file) {
+        try (Stream<Path> walk = Files.walk(file.toPath())) {
+            walk.sorted(Comparator.reverseOrder()).forEach(item -> {
+                try {
+                    Files.delete(item);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void copy(InputStream source, String targetPath) {
         if (ObjectUtils.anyNull(source, targetPath)) {
             return;
@@ -310,7 +363,7 @@ public class FileUtils {
     }
 
     /**
-     * TODO 存在同文件覆盖风险
+     * 输入流转输出流
      *
      * @param source
      * @param target
@@ -330,44 +383,7 @@ public class FileUtils {
             bufferedWriter.flush();
             log.debug("文件写入完成...");
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 拷贝文件夹及其子文件夹
-     *
-     * @param sourceFolder 源文件夹
-     * @param targetFolder 目标文件夹
-     * @throws Exception
-     */
-    public static void copyFolder(String sourceFolder, String targetFolder) throws Exception {
-
-        File sourceFile = new File(sourceFolder);
-        if (!sourceFile.exists()) {
-            throw new Exception("源目标路径：[" + sourceFolder + "] 不存在...");
-        }
-        File targetFile = new File(targetFolder);
-        if (!targetFile.exists()) {
-            boolean mkdirs = targetFile.mkdirs();
-            if (!mkdirs) {
-                throw new Exception("存放的目标路径：[" + targetFolder + "] 不存在...");
-            } else {
-                log.debug("存放的目标路径：[" + targetFolder + "] 已创建...");
-            }
-        }
-
-        // 获取源文件夹下的文件夹或文件
-        File[] sourceFiles = sourceFile.listFiles();
-        assert sourceFiles != null;
-        for (File file : sourceFiles) {
-            String targetFilePath = targetFolder + file.getName();
-            if (file.isFile()) {
-                copy(new FileInputStream(file), new FileOutputStream(targetFilePath));
-            }
-            if (file.isDirectory()) {
-                copyFolder(file.getAbsolutePath() + File.separator, targetFilePath + File.separator);
-            }
+            throw new RuntimeException(e);
         }
     }
 
@@ -382,23 +398,19 @@ public class FileUtils {
         if (StringUtils.isBlank(dirPath)) {
             return Optional.empty();
         }
-        File file = new File(dirPath);
-        if (file.isFile()) {
-            try {
-                if (!file.exists()) {
-                    boolean mkdirs = file.createNewFile();
-                }
-                return Optional.of(file.getParent());
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            Path path = Paths.get(dirPath);
+            if (Files.isDirectory(path)) {
+                Files.createDirectories(path);
+                return Optional.of(dirPath);
+            } else {
+                Path parent = path.getParent();
+                Files.createDirectories(parent);
+                return Optional.of(parent.toAbsolutePath().toString());
             }
-        } else {
-            if (!file.exists()) {
-                boolean mkdirs = file.mkdirs();
-            }
-            return Optional.of(file.getPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return Optional.empty();
     }
 
     public static byte[] copyToByteArray(InputStream inputStream, Integer size) {

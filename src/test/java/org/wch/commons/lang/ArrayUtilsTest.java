@@ -3,9 +3,8 @@ package org.wch.commons.lang;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.wch.commons.lang.ArrayUtils;
+import org.wch.commons.collections.ArrayUtils;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 @RunWith(JUnit4.class)

@@ -6,6 +6,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.wch.commons.beans.XMLAttribute;
+import org.wch.commons.collections.CollectionUtils;
 import org.wch.commons.constant.CommonConstant;
 import org.wch.commons.enums.XMLOperateType;
 import org.wch.commons.lang.*;

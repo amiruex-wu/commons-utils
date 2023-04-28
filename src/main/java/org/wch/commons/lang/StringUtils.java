@@ -1,8 +1,11 @@
 package org.wch.commons.lang;
 
 
-import java.util.Objects;
-import java.util.Optional;
+import lombok.Getter;
+import org.wch.commons.collections.ArrayUtils;
+import org.wch.commons.collections.CollectionUtils;
+
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -999,5 +1002,73 @@ public class StringUtils {
             return Optional.of(source);
         }
         return Optional.of(source + suffix);
+    }
+
+    public static Optional<String> replace(String source, Map<String, Object> params) {
+        return replace(source, params, false, ParamPlaceholderRegex.GENERAL.getRegex());
+    }
+
+    public static Optional<String> replace(String source, Map<String, Object> params, boolean clearPathVariable) {
+        return replace(source, params, clearPathVariable, ParamPlaceholderRegex.GENERAL.getRegex());
+    }
+
+    /**
+     * 替换占位符
+     * <p>
+     *     <ul>示例：
+     *     <li>替换 "${xxxx}"---> 正则： "\\$\\{([a-zA-Z0-9]+)\\}"或者 "\\$\\{(.+?)\\}"</li>
+     *     <li>替换 "{xxxx}" ---> 正则： "\\{([a-zA-Z0-9]+)\\}"或者 "\\{(.+?)\\}"</li>
+     *     </ul>
+     * </p>
+     *
+     * @param source            源字符串
+     * @param params            参数
+     * @param clearPathVariable 是否清除已使用的参数
+     * @param regex             参数正则表达式
+     * @return
+     */
+    public static Optional<String> replace(String source, Map<String, Object> params, boolean clearPathVariable, String regex) {
+        if (StringUtils.isBlank(source) || StringUtils.isBlank(regex) || MapUtils.isEmpty(params)) {
+            return Optional.ofNullable(source);
+        }
+        Set<String> keys = new HashSet<>();
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(source);
+        while (matcher.find()) {
+            String group = matcher.group();
+            final String key = matcher.group(1);
+            Object value;
+            if (params.containsKey(group)) {
+                value = params.get(group);
+                keys.add(group);
+            } else {
+                value = params.get(key);
+                keys.add(key);
+            }
+            source = matcher.replaceFirst(String.valueOf(value));
+            matcher = pattern.matcher(source);
+        }
+        if (clearPathVariable && CollectionUtils.isNotEmpty(keys)) {
+            keys.forEach(params::remove);
+        }
+        return Optional.of(source);
+    }
+
+    public enum ParamPlaceholderRegex {
+        GENERAL(1, "\\{(.+?)\\}"),
+        SPECIAL_1(2, "\\$\\{(.+?)\\}"),
+        SPECIAL_2(3, "\\$\\{(.+?)\\}\\$"),
+        SPECIAL_3(4, "\\#\\{(.+?)\\}"),
+        SPECIAL_4(5, "\\#\\{(.+?)\\}\\#"),
+        ;
+        @Getter
+        private Integer id;
+        @Getter
+        private String regex;
+
+        ParamPlaceholderRegex(Integer id, String regex) {
+            this.id = id;
+            this.regex = regex;
+        }
     }
 }

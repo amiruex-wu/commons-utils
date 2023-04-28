@@ -19,6 +19,10 @@ public class MapUtils {
         return Objects.nonNull(map) && !map.isEmpty();
     }
 
+    public static <K, V> boolean isNotEmpty(Map<K, V> source) {
+        return null != source && !source.isEmpty();
+    }
+
     private <T, R> Map<T, R> unionStrict(Map<T, R> sourceMap, Map<T, R> targetMap, StringBuffer rootPath) {
         if (MapUtils.isEmpty(sourceMap)) {
             return Collections.emptyMap();
@@ -97,6 +101,17 @@ public class MapUtils {
             return new HashMap<>(sourceMap);
         }
         return new HashMap<>(targetMap);
+    }
+
+    public static <K, V> Optional<Map<K, V>> putAll(Map<K, V> source, Map<K, V> target) {
+        Map<K, V> result = new HashMap<>();
+        if (null != source && !source.isEmpty()) {
+            result.putAll(source);
+        }
+        if (null != target && !target.isEmpty()) {
+            result.putAll(target);
+        }
+        return Optional.of(result);
     }
 
     public enum Operation {

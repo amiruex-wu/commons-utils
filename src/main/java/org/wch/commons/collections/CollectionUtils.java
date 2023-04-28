@@ -1,4 +1,8 @@
-package org.wch.commons.lang;
+package org.wch.commons.collections;
+
+import org.wch.commons.lang.NumberUtils;
+import org.wch.commons.lang.NumberUtils1;
+import org.wch.commons.lang.ObjectUtils;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -62,6 +66,30 @@ public class CollectionUtils {
 
     public static <T> boolean isNotEmpty(T[] array) {
         return ObjectUtils.nonNull(array) && array.length != 0;
+    }
+
+    public static boolean isAnyEmpty(Collection... collections) {
+        if (null == collections) {
+            return true;
+        }
+        for (Collection collection : collections) {
+            if (null == collection || collection.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isAllNotEmpty(Collection... collections) {
+        if (null == collections) {
+            return false;
+        }
+        for (Collection collection : collections) {
+            if (null == collection || collection.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static <T, U extends Comparable<? super U>> List<T> distinct(List<T> list, Function<? super T, ? extends U> keyExtractor) {

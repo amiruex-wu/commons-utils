@@ -8,6 +8,7 @@ import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemWriter;
 import org.wch.commons.beans.RSASecretKeyPair;
+import org.wch.commons.collections.ArrayUtils;
 import org.wch.commons.lang.*;
 
 import javax.crypto.*;

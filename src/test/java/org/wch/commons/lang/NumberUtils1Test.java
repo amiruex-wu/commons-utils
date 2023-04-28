@@ -3,7 +3,7 @@ package org.wch.commons.lang;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.wch.commons.lang.CollectionUtils;
+import org.wch.commons.collections.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;

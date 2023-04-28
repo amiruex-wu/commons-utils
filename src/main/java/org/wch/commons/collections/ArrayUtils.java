@@ -1,7 +1,9 @@
-package org.wch.commons.lang;
+package org.wch.commons.collections;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import org.wch.commons.collections.CollectionUtils;
+import org.wch.commons.lang.ObjectUtils;
 
 import java.lang.reflect.Array;
 import java.util.*;
