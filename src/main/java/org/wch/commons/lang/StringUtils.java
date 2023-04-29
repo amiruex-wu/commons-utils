@@ -68,6 +68,9 @@ public class StringUtils {
      */
     public static final char C_NUL = '\0';
 
+    public static final char UNDERLINE = '_';
+    public static final char HORIZONTAL_LINE = '-';
+
     /**
      * <p>
      * Check param whether is blank or null
@@ -1053,6 +1056,148 @@ public class StringUtils {
         }
         return Optional.of(source);
     }
+
+    /**
+     * judgement whether source string is end of separator
+     *
+     * @param source    source string
+     * @param separator last character
+     * @return
+     */
+    public static boolean isEndWith(String source, String separator) {
+        return isNotBlank(source) && source.endsWith(separator);
+    }
+
+    /**
+     * judgement whether source string is end of separator
+     * case when yes then return source string
+     * case when no then return source string appending separator in the end
+     *
+     * @param source
+     * @param separator
+     * @return
+     */
+    public static Optional<String> isEndWithThenAppend(String source, String separator) {
+        if (null == source) {
+            return Optional.empty();
+        }
+        if (null == separator) {
+            return Optional.of(source);
+        }
+        return Optional.of(source.endsWith(separator) ? source : source + separator);
+    }
+
+    /**
+     * 字符串驼峰转下划线格式 示例：SysUser --> sys_user
+     *
+     * @param param 需要转换的字符串
+     * @return 转换好的字符串
+     */
+    public static Optional<String> camelToUnderline(String param) {
+        if (isBlank(param)) {
+            return Optional.empty();
+        }
+        return getConvertString(param, UNDERLINE);
+    }
+
+    /**
+     * 驼峰转横线(水平横线)
+     *
+     * @param source
+     * @return
+     */
+    public static Optional<String> camelToHorizontalLine(String source) {
+        if (isBlank(source)) {
+            return Optional.empty();
+        }
+        return getConvertString(source, HORIZONTAL_LINE);
+       /* int len = source.length();
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            char c = source.charAt(i);
+            if (Character.isUpperCase(c) && i > 0) {
+                sb.append(HORIZONTAL_LINE);
+            }
+            sb.append(Character.toLowerCase(c));
+        }
+        return Optional.of(sb.toString());*/
+    }
+
+
+    /**
+     * 字符串下划线转驼峰格式
+     *
+     * @param source 需要转换的字符串
+     * @return 转换好的字符串
+     */
+    public static String underlineToCamel(String source) {
+        return underlineToCamel(source, "");
+    }
+
+    /**
+     * 下划线转驼峰，示例：t_sys_user --> tSysUser
+     *
+     * @param source
+     * @param prefix
+     * @return
+     */
+    public static String underlineToCamel(String source, String prefix) {
+        if (isBlank(source)) {
+            return null;
+        }
+        String temp = isBlank(prefix) ? source : source.replaceFirst(prefix, "");
+        int len = temp.length();
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            char c = temp.charAt(i);
+            if (c == UNDERLINE) {
+                if (++i < len) {
+                    sb.append(Character.toUpperCase(temp.charAt(i)));
+                }
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
+
+    /**
+     * underline transfer to horizontal line, if Specify parameter of prefix then where replace it with blank
+     *
+     * @param source source string
+     * @param prefix source string of prefix
+     * @return
+     */
+    public static Optional<String> underToHorizontalLine(String source, String prefix) {
+        if (StringUtils.isBlank(source)) {
+            return Optional.empty();
+        }
+        String temp = StringUtils.isBlank(prefix) ? source : source.replaceFirst(prefix, "");
+        String underLine = String.valueOf(UNDERLINE);
+        if (temp.startsWith(underLine)) {
+            temp = source.substring(1);
+        } else {
+            temp = source;
+        }
+        return Optional.of(temp.replaceAll(underLine, String.valueOf(HORIZONTAL_LINE)));
+    }
+
+    // region private functions
+
+    private static Optional<String> getConvertString(String param, Character character) {
+        int len = param.length();
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            char c = param.charAt(i);
+            if (Character.isUpperCase(c) && i > 0) {
+                sb.append(character);
+            }
+            sb.append(Character.toLowerCase(c));
+        }
+        return Optional.of(sb.toString());
+    }
+    // endregion
 
     public enum ParamPlaceholderRegex {
         GENERAL(1, "\\{(.+?)\\}"),

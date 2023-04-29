@@ -180,7 +180,7 @@ public class XMLUtils {
         return parseToList(new ByteArrayInputStream(xmlStr.getBytes(StandardCharsets.UTF_8)), clazz, xmlOperateType);
     }
 
-    @Deprecated
+   /* @Deprecated
     public static Optional<String> addEleProperties(String filePath,
                                                     String identifierKey,
                                                     String identifierValue,
@@ -189,7 +189,7 @@ public class XMLUtils {
                                                     XMLOperateType xmlOperateType) {
         XMLAttribute xmlAttribute = new XMLAttribute(identifierKey, identifierValue, parentPath, false, xmlOperateType, properties);
         return addEleProperties(filePath, xmlAttribute);
-    }
+    }*/
 
     public static Optional<String> addEleProperties(String filePath, XMLAttribute xmlAttribute) {
         if (ObjectUtils.anyNull(filePath, xmlAttribute) || xmlAttribute.isAnyNull()) {

@@ -56,7 +56,7 @@ public class ZipUtils {
             return null;
         }
 
-        try (final ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(result.toFile()))) {
+        try (final ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(result.toFile().toPath()))) {
             zip(file.toPath(), containRootFolder ? file.getName() : "", zipOutputStream);
         } catch (IOException e) {
             e.printStackTrace();
@@ -136,7 +136,7 @@ public class ZipUtils {
             throw new RuntimeException("unzip error from ZipUtils," + e.getMessage());
         }
     }
-
+/*
     // 其他方法
     public static boolean deleteFolderAndFiles(String source) {
         Path path = Paths.get(source);
@@ -151,7 +151,7 @@ public class ZipUtils {
             return false;
         }
         return true;
-    }
+    }*/
 
 
     // region

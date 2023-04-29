@@ -4,9 +4,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.wch.commons.io.FileUtils;
-import org.wch.commons.net.HttpUtils;
+import org.wch.commons.net.HttpClientUtils;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 @RunWith(JUnit4.class)
@@ -67,7 +66,7 @@ public class ZipUtils2Test {
 //        172.16.0.0 - 172.31.255.255
 //        192.168.0.0 - 192.168.255.255
         String ipUrl ="172.31.0.0";
-        boolean b = HttpUtils.isInternalIPAddress(ipUrl);
+        boolean b = HttpClientUtils.isIPAddress(ipUrl);
         System.out.println("result is "+ b);
     }
 

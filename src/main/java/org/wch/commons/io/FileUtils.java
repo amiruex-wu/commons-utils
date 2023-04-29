@@ -342,6 +342,29 @@ public class FileUtils {
         }
     }
 
+    public static boolean deleteFolder(String folder) throws IOException {
+        Files.walkFileTree(Paths.get(folder),
+                new SimpleFileVisitor<Path>() {
+                    // 先去遍历删除文件
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        Files.delete(file);
+//                        System.out.printf("文件被删除 : %s%n", file);
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    @Override
+                    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                        Files.delete(dir);
+//                        System.out.printf("文件夹被删除: %s%n", dir);
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                }
+        );
+        return true;
+    }
+
     public static void copy(InputStream source, String targetPath) {
         if (ObjectUtils.anyNull(source, targetPath)) {
             return;

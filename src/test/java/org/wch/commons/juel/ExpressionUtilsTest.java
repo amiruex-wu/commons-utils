@@ -30,7 +30,7 @@ public class ExpressionUtilsTest {
         params.put("b", 5);
         params.put("c", 100);
         params.put("d", 35);
-        Optional<Object> evaluate = ExpressionUtils.of().evaluate(expression, params);
+        Optional<Object> evaluate = ExpressionUtils.evaluate(expression, params);
         System.out.println("result is " + evaluate.orElse(null));
     }
 

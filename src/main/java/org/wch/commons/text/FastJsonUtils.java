@@ -143,8 +143,8 @@ public class FastJsonUtils {
         @SneakyThrows
         @Override
         public <T> T deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
-            final JSONLexer lexer = parser.lexer;
-            final int token = lexer.token();
+            final JSONLexer lexer = parser.getLexer();
+            final int token = lexer.intValue();
             Class cls = (Class) type;
             Object[] enumConstants = cls.getEnumConstants();
             if (Enum.class.isAssignableFrom(cls)) {

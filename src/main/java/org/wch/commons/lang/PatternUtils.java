@@ -3,7 +3,6 @@ package org.wch.commons.lang;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -81,7 +80,7 @@ public class PatternUtils {
             String key = matcher.group(1);// 键名
             Object value = paramData.get(key);// 键值
             // 下一步是替换并且把替换好的值放到sb中
-            Optional<String> optional = ConvertUtils2.convertIfNecessary(value, String.class);
+            Optional<String> optional = ConvertUtils.convertIfNecessary(value, String.class);
             optional.ifPresent(s -> matcher.appendReplacement(msg, isUrl ? getParamRefactoring(s) : s));
         }
         // 把符合的数据追加到sb尾
@@ -89,6 +88,11 @@ public class PatternUtils {
         return Optional.of(msg.toString());
     }
 
+    /**
+     * 用于URL参数编码重构
+     * @param param
+     * @return
+     */
     private static String getParamRefactoring(String param) {
         if (StringUtils.isBlank(param)) {
             return StringUtils.EMPTY;
@@ -99,18 +103,5 @@ public class PatternUtils {
             e.printStackTrace();
         }
         return StringUtils.EMPTY;
-        /*String regexTemp1 = "http://[\\d]{1,3}(\\.)[\\d]{1,3}(\\.)[\\d]{1,3}(\\.)[\\d]{1,3}";
-        String regexTemp2 = "https://[\\d]{1,3}(\\.)[\\d]{1,3}(\\.)[\\d]{1,3}(\\.)[\\d]{1,3}";
-        Matcher matcher = Pattern.compile(regexTemp1).matcher(param);
-        boolean findResult = matcher.find();
-        if (!findResult) {
-            Matcher matcher1 = Pattern.compile(regexTemp2).matcher(param);
-            findResult = matcher1.find();
-        }
-        if (findResult) {
-
-            return param.replaceAll("&", "%26").replaceAll("\\s", "%20");
-        }
-        return param.replaceAll("\\s", "%20");*/
     }
 }

@@ -15,18 +15,12 @@ import java.util.Optional;
  */
 public class ExpressionUtils {
 
-    private ExpressionManager expressionManager;
+    private static ExpressionManager expressionManager = new ExpressionManager();
 
     public ExpressionUtils() {
     }
 
-    public static <T> ExpressionUtils of(){
-        ExpressionUtils expressionManager = new ExpressionUtils();
-        expressionManager.expressionManager = new ExpressionManager();
-        return expressionManager;
-    }
-
-    public <T> Optional<T> evaluate(String expression, Map<String, Object> params) {
+    public static <T> Optional<T> evaluate(String expression, Map<String, Object> params) {
         if (ObjectUtils.isEmpty(params) || StringUtils.isBlank(expression)) {
             return Optional.empty();
         }
@@ -54,21 +48,11 @@ public class ExpressionUtils {
         return ExpressionManager.of(beanMappingClass, functions).evaluate(expression, params);
     }
 
-
-    /*public static void addFunction(List<Functions> functions) {
+    public static void addFunction(List<Functions> functions) {
         if (ObjectUtils.isNull(expressionManager) || ObjectUtils.isEmpty(functions)) {
             return;
         }
         expressionManager.addFunction(functions);
     }
-
-
-    public static <T> Optional<T> evaluate(String expression, Map<String, Object> params) {
-        if (ObjectUtils.anyNull(expressionManager, params, expression) || StringUtils.isBlank(expression)) {
-            return Optional.empty();
-        }
-        return expressionManager.evaluate(expression, params);
-    }*/
-
 
 }

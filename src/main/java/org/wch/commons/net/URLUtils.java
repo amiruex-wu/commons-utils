@@ -1,17 +1,20 @@
 package org.wch.commons.net;
 
 import org.apache.hc.core5.net.URIBuilder;
+import org.wch.commons.enums.ProtocolType;
 import org.wch.commons.lang.MapUtils;
+import org.wch.commons.lang.ObjectUtils;
 import org.wch.commons.lang.StringUtils;
 
 
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
- * @Description: TODO
+ * @Description: 链接构建工具
  * @Author: wuchu
  * @CreateTime: 2023-04-27 11:29
  */
@@ -55,4 +58,24 @@ public class URLUtils {
         return Optional.empty();
     }
 
+    public static Optional<String> buildURL(ProtocolType protocolType, String domainNameOrIp, Integer port, String pathUrl, Map<String, Object> queryParams) {
+        if (ObjectUtils.anyNull(protocolType, domainNameOrIp)) {
+            return Optional.empty();
+        }
+        StringBuilder stringBuffer = new StringBuilder();
+        stringBuffer.append(protocolType.getName()).append("://")
+                .append(domainNameOrIp).append(null == port ? "" : port)
+                .append(StringUtils.isBlank(pathUrl) ? "" : pathUrl);
+        try {
+            URIBuilder uriBuilder = new URIBuilder(stringBuffer.toString());
+            if (MapUtils.isNotEmpty(queryParams)) {
+                for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
+                    uriBuilder.addParameter(entry.getKey(), String.valueOf(entry.getValue()));
+                }
+            }
+            return Optional.ofNullable(uriBuilder.build().toString());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

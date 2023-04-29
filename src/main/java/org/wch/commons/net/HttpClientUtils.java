@@ -103,10 +103,6 @@ public class HttpClientUtils {
         }
         try (CloseableHttpClient httpclient = getCloseableHttpClient()) {
             HttpPost httpPost = new HttpPost(optional.get());
-            /*List<NameValuePair> nvps = new ArrayList<>();
-            nvps.add(new BasicNameValuePair("username", "vip"));
-            nvps.add(new BasicNameValuePair("password", "secret"));
-            httpPost.setEntity(new UrlEncodedFormEntity(nvps));*/
             StringEntity stringEntity = getStringEntity(httpParams.getBodyParams());
             httpPost.setEntity(stringEntity);
 
