@@ -23,35 +23,110 @@ public class MapUtils {
         return null != source && !source.isEmpty();
     }
 
-    private <T, R> Map<T, R> unionStrict(Map<T, R> sourceMap, Map<T, R> targetMap, StringBuffer rootPath) {
+    public static boolean isAnyEmpty(Map... maps) {
+        if (null == maps) {
+            return true;
+        }
+        for (Map map : maps) {
+            if (null == map || map.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isAllEmpty(Map... maps) {
+        if (null == maps) {
+            return true;
+        }
+        for (Map map : maps) {
+            if (null != map && !map.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isAllNotEmpty(Map... maps) {
+        if (null == maps) {
+            return false;
+        }
+        for (Map map : maps) {
+            if (null == map || map.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static <T, R> Map<T, R> unionMap(Map<T, R> source, Map<T, R> target, Operation operation) {
+        if (isAllEmpty(source, target)) {
+            return Collections.emptyMap();
+        } else if (isEmpty(source) && isNotEmpty(target)) {
+            return target;
+        } else if (isNotEmpty(source) && isEmpty(target)) {
+            return source;
+        } else {
+            Map<T, R> result;
+            switch (operation) {
+                case BASE_SOURCE_STRICT:
+                    result = unionStrict(source, target);
+                    break;
+                case BASE_SOURCE_ONLY_ADD:
+                    result = unionMapOnlyAdd(source, target);
+                    break;
+                case BASE_TARGET_NO_STRICT:
+                    result = unionMapNoStrict(source, target);
+                    break;
+                default:
+                    result = new HashMap<>();
+                    break;
+            }
+            return result;
+        }
+    }
+
+    public static <K, V> Optional<Map<K, V>> putAll(Map<K, V> source, Map<K, V> target) {
+        Map<K, V> result = new HashMap<>();
+        if (null != source && !source.isEmpty()) {
+            result.putAll(source);
+        }
+        if (null != target && !target.isEmpty()) {
+            result.putAll(target);
+        }
+        return Optional.of(result);
+    }
+
+    // region 私有方法
+    private static <T, R> Map<T, R> unionStrict(Map<T, R> sourceMap, Map<T, R> targetMap) {
         if (MapUtils.isEmpty(sourceMap)) {
             return Collections.emptyMap();
         }
         if (MapUtils.isEmpty(targetMap)) {
             return new HashMap<>(sourceMap);
         }
-        final Set<T> union = sourceMap.keySet();
+        Set<T> union = sourceMap.keySet();
         Map<T, R> result = new HashMap<>();
         for (T key : union) {
-            final Object source = sourceMap.get(key);
-            final Object target = targetMap.get(key);
+            Object source = sourceMap.get(key);
+            Object target = targetMap.get(key);
             if (Objects.isNull(source)) {
-                result.put(key, Objects.isNull(target) ? null : (R) target);
+                result.put(key, null == target ? null : (R) target);
             } else {
                 if (source instanceof Map && target instanceof Map) {
                     Map<T, R> sourceMapTemp = (Map<T, R>) source;
                     Map<T, R> targetMapTemp = (Map<T, R>) target;
-                    final Map<T, R> trMap = unionStrict(sourceMapTemp, targetMapTemp, rootPath);
+                    Map<T, R> trMap = unionStrict(sourceMapTemp, targetMapTemp);
                     result.put(key, (R) trMap);
                 } else {
-                    result.put(key, Objects.isNull(target) ? null : (R) target);
+                    result.put(key, null == target ? null : (R) target);
                 }
             }
         }
         return result;
     }
 
-    private <T, R> Map<T, R> unionMapOnlyAdd(Map<T, R> sourceMap, Map<T, R> targetMap) {
+    private static <T, R> Map<T, R> unionMapOnlyAdd(Map<T, R> sourceMap, Map<T, R> targetMap) {
         if (MapUtils.isEmpty(sourceMap)) {
             return Collections.emptyMap();
         }
@@ -71,7 +146,7 @@ public class MapUtils {
             final Object target = targetMap.get(key);
             if (sourceContainKey && targetContainKey) {
                 if (Objects.isNull(source)) {
-                    result.put(key, Objects.isNull(target) ? null : (R) target);
+                    result.put(key, null == target ? null : (R) target);
                 } else {
                     if (source instanceof Map && target instanceof Map) {
                         Map<T, R> sourceMapTemp = (Map<T, R>) source;
@@ -79,21 +154,21 @@ public class MapUtils {
                         final Map<T, R> trMap = unionMapOnlyAdd(sourceMapTemp, targetMapTemp);
                         result.put(key, (R) trMap);
                     } else {
-                        result.put(key, Objects.isNull(target) ? null : (R) target);
+                        result.put(key, null == target ? null : (R) target);
                     }
                 }
             } else if (!sourceContainKey && targetContainKey) {
                 // 原数据不存在，目标数据存在
-                result.put(key, Objects.isNull(target) ? null : (R) target);
+                result.put(key, null == target ? null : (R) target);
             } else {
                 // 原数据存在，目标数据不存在
-                result.put(key, Objects.isNull(source) ? null : (R) source);
+                result.put(key, null == source ? null : (R) source);
             }
         }
         return result;
     }
 
-    private <T, R> Map<T, R> unionMapNoStrict(Map<T, R> sourceMap, Map<T, R> targetMap) {
+    private static <T, R> Map<T, R> unionMapNoStrict(Map<T, R> sourceMap, Map<T, R> targetMap) {
         if (MapUtils.isEmpty(sourceMap)) {
             return Collections.emptyMap();
         }
@@ -103,16 +178,7 @@ public class MapUtils {
         return new HashMap<>(targetMap);
     }
 
-    public static <K, V> Optional<Map<K, V>> putAll(Map<K, V> source, Map<K, V> target) {
-        Map<K, V> result = new HashMap<>();
-        if (null != source && !source.isEmpty()) {
-            result.putAll(source);
-        }
-        if (null != target && !target.isEmpty()) {
-            result.putAll(target);
-        }
-        return Optional.of(result);
-    }
+    // endregion
 
     public enum Operation {
         // 两大场景：

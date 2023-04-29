@@ -78,10 +78,10 @@ public class XMLUtilsTest {
         Map<String, Object> properties = new HashMap<>();
         properties.put("data", "aaadddddddddddd");
         String parentPath = null;
-        Optional<String> student = XMLUtils.addEleProperties(filePath, "name", "李四", parentPath, properties, XMLOperateType.GENERAL);
+//        Optional<String> student = XMLUtils.addEleProperties(filePath, "name", "李四", parentPath, properties, XMLOperateType.GENERAL);
 
 //            System.out.println("result is " + student.getStudentClass()+", interest is "+ Strings.join(student.getInterest(), ','));
-        System.out.println("result is " + student.orElse(null));
+//        System.out.println("result is " + student.orElse(null));
 
     }
 
@@ -91,10 +91,10 @@ public class XMLUtilsTest {
         Map<String, Object> properties = new HashMap<>();
         properties.put("data", "aaadddddddddddd");
         String parentPath = "/studentClass";
-        Optional<String> student = XMLUtils.addEleProperties(filePath, "name", "李四", parentPath, properties, XMLOperateType.GENERAL);
+//        Optional<String> student = XMLUtils.addEleProperties(filePath, "name", "李四", parentPath, properties, XMLOperateType.GENERAL);
 
 //            System.out.println("result is " + student.getStudentClass()+", interest is "+ Strings.join(student.getInterest(), ','));
-        System.out.println("result is " + student.orElse(null));
+//        System.out.println("result is " + student.orElse(null));
 
     }
 
@@ -104,10 +104,10 @@ public class XMLUtilsTest {
         Map<String, Object> properties = new HashMap<>();
         properties.put("data", "aaadddddddddddd");
         String parentPath = "/studentClass";
-        Optional<String> student = XMLUtils.addEleProperties(filePath, "name", "李四", parentPath, properties, XMLOperateType.ATTRIBUTE);
+//        Optional<String> student = XMLUtils.addEleProperties(filePath, "name", "李四", parentPath, properties, XMLOperateType.ATTRIBUTE);
 
 //            System.out.println("result is " + student.getStudentClass()+", interest is "+ Strings.join(student.getInterest(), ','));
-        System.out.println("result is " + student.orElse(null));
+//        System.out.println("result is " + student.orElse(null));
 
     }
 

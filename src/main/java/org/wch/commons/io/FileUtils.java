@@ -1,9 +1,6 @@
 package org.wch.commons.io;
 
 
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
-import lombok.SneakyThrows;
 import org.wch.commons.callableInterface.FileReaderCallable;
 import org.wch.commons.callableInterface.FileWriterCallable;
 import org.wch.commons.lang.ObjectUtils;
@@ -24,7 +21,7 @@ import java.util.stream.Stream;
  */
 public class FileUtils {
 
-    private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
+//    private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
 
     private final String resourceRelativePath;
 
@@ -85,7 +82,7 @@ public class FileUtils {
             while (ObjectUtils.nonNull(line = bufferedReader.readLine())) {
                 stringBuffer.append(line).append(StringUtils.LF);
             }
-            log.debug("文件读取完成...");
+//            log.debug("文件读取完成...");
             return Optional.of(stringBuffer.toString());
         } catch (IOException e) {
             e.printStackTrace();
@@ -139,7 +136,7 @@ public class FileUtils {
             while (ObjectUtils.nonNull(line = bufferedReader.readLine())) {
                 fileReaderCallable.call(line);
             }
-            log.debug("文件读取完成...");
+//            log.debug("文件读取完成...");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -274,7 +271,7 @@ public class FileUtils {
         }
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(source));
              BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(target))) {
-            log.debug("文件写入开始...");
+//            log.debug("文件写入开始...");
             String line;
             while (ObjectUtils.nonNull(line = bufferedReader.readLine())) {
                 Object call = fileWriterCallable.call(line);
@@ -282,7 +279,7 @@ public class FileUtils {
                 bufferedWriter.newLine();
             }
             bufferedWriter.flush();
-            log.debug("文件写入完成...");
+//            log.debug("文件写入完成...");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -372,14 +369,14 @@ public class FileUtils {
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(source));
              FileOutputStream out = new FileOutputStream(targetPath);
              BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(out))) {
-            log.debug("文件写入开始...");
+//            log.debug("文件写入开始...");
             String line;
             while (ObjectUtils.nonNull(line = bufferedReader.readLine())) {
                 bufferedWriter.write(line);
                 bufferedWriter.newLine();
             }
             bufferedWriter.flush();
-            log.debug("文件写入完成...");
+//            log.debug("文件写入完成...");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -397,14 +394,14 @@ public class FileUtils {
         }
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(source));
              BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(target))) {
-            log.debug("文件写入开始...");
+//            log.debug("文件写入开始...");
             String line;
             while (ObjectUtils.nonNull(line = bufferedReader.readLine())) {
                 bufferedWriter.write(line);
                 bufferedWriter.newLine();
             }
             bufferedWriter.flush();
-            log.debug("文件写入完成...");
+//            log.debug("文件写入完成...");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

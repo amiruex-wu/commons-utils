@@ -1087,6 +1087,16 @@ public class StringUtils {
         return Optional.of(source.endsWith(separator) ? source : source + separator);
     }
 
+    public static Optional<String> isEndWithThenDelete(String source, String separator) {
+        if (null == source) {
+            return Optional.empty();
+        }
+        if (null == separator) {
+            return Optional.of(source);
+        }
+        return Optional.of(source.endsWith(separator) ? source.substring(0, source.lastIndexOf(separator)) : source);
+    }
+
     /**
      * 字符串驼峰转下划线格式 示例：SysUser --> sys_user
      *
@@ -1111,16 +1121,6 @@ public class StringUtils {
             return Optional.empty();
         }
         return getConvertString(source, HORIZONTAL_LINE);
-       /* int len = source.length();
-        StringBuilder sb = new StringBuilder(len);
-        for (int i = 0; i < len; i++) {
-            char c = source.charAt(i);
-            if (Character.isUpperCase(c) && i > 0) {
-                sb.append(HORIZONTAL_LINE);
-            }
-            sb.append(Character.toLowerCase(c));
-        }
-        return Optional.of(sb.toString());*/
     }
 
 

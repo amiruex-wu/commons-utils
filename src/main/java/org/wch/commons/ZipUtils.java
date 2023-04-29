@@ -1,19 +1,16 @@
 package org.wch.commons;
 
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.wch.commons.lang.StringUtils;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Enumeration;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -25,7 +22,7 @@ import java.util.zip.ZipOutputStream;
  */
 public class ZipUtils {
 
-    private static final Logger log = LoggerFactory.getLogger(ZipUtils.class);
+//    private static final Logger log = LoggerFactory.getLogger(ZipUtils.class);
 
     /**
      * 压缩文件(自动关闭输出流)
@@ -46,7 +43,7 @@ public class ZipUtils {
                 final Path directories = Files.createDirectories(targetFile.toPath());
                 result = directories.resolve(RandomUtils.uuid() + ".zip");
             } catch (IOException e) {
-                log.error("targetFile create error,{}", e.getMessage(), e);
+//                log.error("targetFile create error,{}", e.getMessage(), e);
                 e.printStackTrace();
             }
         } else {
@@ -86,7 +83,7 @@ public class ZipUtils {
     public static void upZip(String sourceZipPath, String targetFolderPath) {
         final Optional<String> optional = StringUtils.appendIfMissing(targetFolderPath, File.separator);
         if (!optional.isPresent()) {
-            log.error("targetFolderPath is not present");
+//            log.error("targetFolderPath is not present");
             return;
         }
         // 开始解压
@@ -109,7 +106,7 @@ public class ZipUtils {
                 }
             }
         } catch (Exception e) {
-            log.error("unzip error from ZipUtils，", e);
+//            log.error("unzip error from ZipUtils，", e);
             throw new RuntimeException("unzip error from ZipUtils," + e.getMessage());
         }
     }
@@ -132,7 +129,7 @@ public class ZipUtils {
                 }
             }
         } catch (Exception e) {
-            log.error("unzip error from ZipUtils，", e);
+//            log.error("unzip error from ZipUtils，", e);
             throw new RuntimeException("unzip error from ZipUtils," + e.getMessage());
         }
     }

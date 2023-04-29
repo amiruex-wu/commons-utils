@@ -39,7 +39,7 @@ public class TreeUtilsTest {
         List<TreeNode> treeSelects1 = TreeUtils.buildTreeById(treeNodes);
         /*Gson gson = new Gson();
         String s = gson.toJson(treeSelects1);*/
-        System.out.println("result is: \n"+ GsonUtils.toJSONStringWithNull(treeSelects1));
+//        System.out.println("result is: \n"+ GsonUtils.toJSONStringWithNull(treeSelects1));
     }
 
 
@@ -65,7 +65,7 @@ public class TreeUtilsTest {
 //        List<TreeSelect> treeSelects1 = (List<TreeSelect>) treeNodes1;
         /*Gson gson = new Gson();
         String s = gson.toJson(treeSelects1);*/
-        System.out.println("result is: \n"+ GsonUtils.toJSONStringWithNull(treeSelects1));
+//        System.out.println("result is: \n"+ GsonUtils.toJSONStringWithNull(treeSelects1));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class TreeUtilsTest {
 //        List<TreeSelect> treeSelects1 = (List<TreeSelect>) treeNodes1;
         /*Gson gson = new Gson();
         String s = gson.toJson(treeSelects1);*/
-        System.out.println("result is: \n"+ GsonUtils.toJSONStringWithNull(treeSelects1));
+//        System.out.println("result is: \n"+ GsonUtils.toJSONStringWithNull(treeSelects1));
     }
 
     @Test
@@ -117,7 +117,7 @@ public class TreeUtilsTest {
 //        List<TreeSelect> treeSelects1 = (List<TreeSelect>) treeNodes1;
         /*Gson gson = new Gson();
         String s = gson.toJson(treeSelects1);*/
-        System.out.println("result is: \n"+ GsonUtils.toJSONString(treeSelects1));
+//        System.out.println("result is: \n"+ GsonUtils.toJSONString(treeSelects1));
 //        System.out.println("result is1: \n"+ GJSONUtils.toJSONStringWithNull(treeSelects2, false));
     }
 
@@ -149,7 +149,7 @@ public class TreeUtilsTest {
         map.put("7",7);
         Optional<TreesData<TreeSelect>> optional = TreeUtils.buildByUid(treeNodes, true, (treeSelect) ->
                 treeSelect.setDataNum(map.get(treeSelect.getUid())));
-        System.out.println("result is: \n"+ (optional.map(treeSelectTreesData -> GsonUtils.toJSONStringWithNull(treeSelectTreesData.getTrees())).orElse(null)));
+//        System.out.println("result is: \n"+ (optional.map(treeSelectTreesData -> GsonUtils.toJSONStringWithNull(treeSelectTreesData.getTrees())).orElse(null)));
     }
 
 

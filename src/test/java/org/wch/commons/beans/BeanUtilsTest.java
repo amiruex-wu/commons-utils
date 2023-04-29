@@ -1,7 +1,7 @@
 package org.wch.commons.beans;
 
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
+//import com.sun.org.slf4j.internal.Logger;
+//import com.sun.org.slf4j.internal.LoggerFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -19,7 +19,7 @@ import java.util.List;
 //@Slf4j
 @RunWith(JUnit4.class)
 public class BeanUtilsTest {
-    private Logger log = LoggerFactory.getLogger(BeanUtilsTest.class);
+//    private Logger log = LoggerFactory.getLogger(BeanUtilsTest.class);
 
     @Test
     public void test() {
@@ -36,7 +36,7 @@ public class BeanUtilsTest {
 //        final PersonA personA = new PersonA();
         final PersonA personA = BeanUtils.copyBean(personB, PersonA::new);
 
-        log.debug("result is:{}", personA);
+//        log.debug("result is:{}", personA);
     }
 
     @Test
